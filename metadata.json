@@ -1,0 +1,5 @@
+{
+  "name": "OLS-HateSpeech-Detection",
+  "description": "An educational capstone project demonstrating Hate Speech Detection using Orthogonal Least Squares (OLS) feature selection.",
+  "requestFramePermissions": []
+}
