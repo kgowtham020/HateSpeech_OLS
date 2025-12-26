@@ -1,230 +1,248 @@
 import React from 'react';
-import { Database, Filter, Binary, FileText, CheckCircle, BarChart2, ArrowDown, ArrowRight, Table, Scissors } from 'lucide-react';
+import { Database, Filter, Binary, FileText, BarChart2, CheckCircle, Terminal, Code2 } from 'lucide-react';
 
 const HowItWorks: React.FC = () => {
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">System Methodology</h2>
-        <p className="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          A deep dive into the machine learning pipeline. See exactly how raw text is transformed into a prediction using OLS-based feature selection.
-        </p>
+    <div className="w-full bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      
+      {/* Header Section */}
+      <div className="relative py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-6">
+            <Code2 className="h-4 w-4" />
+            <span>Technical Architecture</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
+            Inside the <span className="text-blue-600 dark:text-blue-400">Pipeline</span>
+          </h2>
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+            From raw tweets to accurate predictions. Explore the Python code and mathematical logic that powers our OLS-based Hate Speech Detection model.
+          </p>
+        </div>
       </div>
 
-      <div className="space-y-24">
-        {/* Step 1: Data Collection */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg transform rotate-3">
-                <Database className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">1. Dataset Collection</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                We utilize the <strong>Davidson Hate Speech Dataset</strong>. It contains ~25,000 tweets labeled by humans. This provides the "Ground Truth" our model learns from.
-              </p>
-              
-              {/* Visual Aid */}
-              <div className="bg-slate-800 rounded-lg p-4 shadow-md overflow-hidden font-mono text-sm text-slate-300 border border-slate-700">
-                <div className="flex border-b border-slate-600 pb-2 mb-2 font-bold text-slate-100">
-                  <span className="w-16">Class</span>
-                  <span className="flex-1">Tweet Text</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex">
-                    <span className="w-16 text-red-400">Hate</span>
-                    <span className="flex-1">"These people are trash..."</span>
-                  </div>
-                  <div className="flex">
-                    <span className="w-16 text-amber-400">Offen</span>
-                    <span className="flex-1">"Stop acting so crazy..."</span>
-                  </div>
-                  <div className="flex">
-                    <span className="w-16 text-green-400">Norm</span>
-                    <span className="flex-1">"I love my bird..."</span>
-                  </div>
-                  <div className="pt-2 text-xs text-slate-500 italic text-center">... 24,000+ more rows</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div className="max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div className="relative">
+          {/* Vertical Timeline Line */}
+          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-slate-200 dark:bg-slate-800"></div>
 
-        {/* Step 2: Preprocessing */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-blue-500 flex items-center justify-center shadow-lg transform -rotate-2">
-                <Filter className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">2. Text Preprocessing</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                Raw social media text is messy. We clean it to reduce noise so the algorithm focuses only on meaningful words. This involves lowercasing, removing handles, URLs, and stemming/lemmatization.
-              </p>
+          {/* STEP 1: Data Ingestion */}
+          <TimelineItem 
+            step="01"
+            title="Data Ingestion"
+            icon={<Database className="h-6 w-6 text-white" />}
+            color="bg-indigo-500"
+            description="We utilize the Davidson et al. (2017) dataset. It is loaded into a Pandas DataFrame, containing ~25k labeled tweets. The classes are heavily imbalanced, requiring careful handling during training."
+            codeSnippet={`import pandas as pd
 
-              {/* Visual Aid: Transformation */}
-              <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center">
-                <div className="md:col-span-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/50 p-4 rounded-lg">
-                  <p className="text-xs font-bold text-red-600 dark:text-red-400 uppercase mb-2">Input (Raw)</p>
-                  <p className="font-mono text-slate-800 dark:text-slate-200 text-sm">
-                    "RT @User: I HATE this!! 😡 <br/> Check http://url.com #annoying"
-                  </p>
-                </div>
-                
-                <div className="md:col-span-1 flex justify-center">
-                  <ArrowRight className="h-8 w-8 text-slate-400 hidden md:block" />
-                  <ArrowDown className="h-8 w-8 text-slate-400 md:hidden" />
-                </div>
+# Load the Davidson Hate Speech Dataset
+df = pd.read_csv('labeled_data.csv')
 
-                <div className="md:col-span-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/50 p-4 rounded-lg">
-                  <p className="text-xs font-bold text-green-600 dark:text-green-400 uppercase mb-2">Output (Cleaned)</p>
-                  <p className="font-mono text-slate-800 dark:text-slate-200 text-sm">
-                    "hate this check annoy"
-                  </p>
-                </div>
-              </div>
-              <ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <li className="flex items-center"><Scissors className="h-3 w-3 mr-2" /> Removed @mentions</li>
-                <li className="flex items-center"><Scissors className="h-3 w-3 mr-2" /> Removed URLs</li>
-                <li className="flex items-center"><Scissors className="h-3 w-3 mr-2" /> Removed Punctuation/Emoji</li>
-                <li className="flex items-center"><Scissors className="h-3 w-3 mr-2" /> Lemmatization applied</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+# Class labels: 
+# 0: Hate Speech, 1: Offensive, 2: Normal
+print(df['class'].value_counts())
+# Output: {1: 19190, 2: 4163, 0: 1430}`}
+            alignment="left"
+          />
 
-        {/* Step 3: TF-IDF */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-cyan-500 flex items-center justify-center shadow-lg transform rotate-1">
-                <FileText className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">3. Feature Extraction (TF-IDF)</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                Computers can't read text, they need numbers. We use <strong>TF-IDF (Term Frequency-Inverse Document Frequency)</strong> to convert tweets into numerical vectors. Rare words get higher weights; common words (like "the") get lower weights.
-              </p>
+          {/* STEP 2: Preprocessing */}
+          <TimelineItem 
+            step="02"
+            title="NLP Preprocessing"
+            icon={<Filter className="h-6 w-6 text-white" />}
+            color="bg-pink-500"
+            description="Raw text is noisy. We implement a rigorous cleaning pipeline using Regex and NLTK to remove handles, URLs, and punctuation. Lemmatization reduces words to their root form (e.g., 'running' -> 'run')."
+            codeSnippet={`import re
+from nltk.stem import WordNetLemmatizer
 
-              {/* Visual Aid: Matrix */}
-              <div className="overflow-x-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
-                <table className="min-w-full text-sm text-center">
-                  <thead className="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
-                    <tr>
-                      <th className="p-2 border-r dark:border-slate-600">Tweet ID</th>
-                      <th className="p-2 border-r dark:border-slate-600">"hate"</th>
-                      <th className="p-2 border-r dark:border-slate-600">"love"</th>
-                      <th className="p-2 border-r dark:border-slate-600">"trash"</th>
-                      <th className="p-2">... (10k words)</th>
-                    </tr>
-                  </thead>
-                  <tbody className="font-mono text-slate-700 dark:text-slate-300">
-                    <tr className="border-t dark:border-slate-700">
-                      <td className="p-2 border-r dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold">1</td>
-                      <td className="p-2 border-r dark:border-slate-600 bg-indigo-50 dark:bg-indigo-900 font-bold text-indigo-700 dark:text-indigo-300">0.52</td>
-                      <td className="p-2 border-r dark:border-slate-600">0.00</td>
-                      <td className="p-2 border-r dark:border-slate-600">0.00</td>
-                      <td className="p-2 text-slate-400">...</td>
-                    </tr>
-                    <tr className="border-t dark:border-slate-700">
-                      <td className="p-2 border-r dark:border-slate-600 bg-slate-50 dark:bg-slate-700 font-bold">2</td>
-                      <td className="p-2 border-r dark:border-slate-600">0.00</td>
-                      <td className="p-2 border-r dark:border-slate-600 bg-indigo-50 dark:bg-indigo-900 font-bold text-indigo-700 dark:text-indigo-300">0.48</td>
-                      <td className="p-2 border-r dark:border-slate-600">0.00</td>
-                      <td className="p-2 text-slate-400">...</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
+def preprocess(text):
+    # 1. Lowercase & remove URLs/Handles
+    text = text.lower()
+    text = re.sub(r"http\S+|@\w+", '', text)
+    
+    # 2. Remove punctuation & numbers
+    text = re.sub(r"[^\w\s]", '', text)
+    
+    # 3. Lemmatization
+    lemmatizer = WordNetLemmatizer()
+    return " ".join([lemmatizer.lemmatize(w) for w in text.split()])`}
+            alignment="right"
+          />
 
-        {/* Step 4: OLS Selection */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-teal-500 flex items-center justify-center shadow-lg transform -rotate-1">
-                <Binary className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">4. OLS Feature Selection</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                <strong>The Core Project Innovation.</strong> TF-IDF creates thousands of features (columns), making the model slow and prone to overfitting. We use <strong>Orthogonal Least Squares (OLS)</strong> to mathematically select only the most distinct and informative columns, discarding the noise.
-              </p>
+          {/* STEP 3: Vectorization */}
+          <TimelineItem 
+            step="03"
+            title="TF-IDF Vectorization"
+            icon={<FileText className="h-6 w-6 text-white" />}
+            color="bg-cyan-500"
+            description="We convert text into numerical vectors using TF-IDF. This statistical measure evaluates how relevant a word is to a document in a collection. We generate over 10,000 features initially."
+            codeSnippet={`from sklearn.feature_extraction.text import TfidfVectorizer
 
-              {/* Visual Aid: Selection */}
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm relative transition-colors">
-                <div className="flex justify-between items-center mb-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                  <span>Original Features (10,000+)</span>
-                  <ArrowRight className="h-4 w-4" />
-                  <span className="text-teal-600 dark:text-teal-400 font-bold">Selected Features (~1,500)</span>
-                </div>
-                <div className="flex gap-1 h-12">
-                  {/* Columns visualization */}
-                  {[...Array(20)].map((_, i) => {
-                    // Highlight specific columns to represent selection
-                    const isSelected = [2, 5, 8, 14, 18].includes(i);
-                    return (
-                      <div 
-                        key={i} 
-                        className={`flex-1 rounded-sm transition-all duration-500 ${isSelected ? 'bg-teal-500 scale-110 shadow-sm' : 'bg-slate-200 dark:bg-slate-600 opacity-30'}`}
-                        title={isSelected ? "Selected Feature" : "Discarded"}
-                      ></div>
-                    )
-                  })}
-                </div>
-                <p className="text-center text-xs text-slate-400 mt-2">OLS algorithm scans and picks only the columns (blue) that minimize error variance.</p>
-              </div>
-            </div>
-          </div>
-        </section>
+# Convert text to sparse numerical matrix
+# N-grams (1,3) captures phrases like "white trash"
+vectorizer = TfidfVectorizer(
+    max_features=10000,
+    ngram_range=(1, 3),
+    stop_words='english'
+)
 
-        {/* Step 5 & 6: Training & Eval */}
-        <section className="relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <div className="h-16 w-16 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg transform rotate-2">
-                <BarChart2 className="h-8 w-8 text-white" />
-              </div>
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">5. Training & Evaluation</h3>
-              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-6">
-                We feed the optimized OLS features into a <strong>Logistic Regression</strong> model. The model learns a decision boundary to separate the classes. We then test it on unseen data to generate an accuracy report.
-              </p>
+X = vectorizer.fit_transform(cleaned_tweets)
+print(X.shape) # (24783, 10000)`}
+            alignment="left"
+          />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg border border-emerald-100 dark:border-emerald-800 flex flex-col items-center justify-center text-center">
-                  <h4 className="text-emerald-800 dark:text-emerald-300 font-bold mb-1">Random Forest</h4>
-                  <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-2">Complex, Non-linear</p>
-                  <div className="w-full bg-white dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full" style={{ width: '89%' }}></div>
-                  </div>
-                  <span className="text-xs font-bold mt-1 text-slate-600 dark:text-slate-300">89% F1-Score</span>
-                </div>
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800 flex flex-col items-center justify-center text-center">
-                  <h4 className="text-indigo-800 dark:text-indigo-300 font-bold mb-1">Logistic Regression</h4>
-                  <p className="text-sm text-indigo-600 dark:text-indigo-400 mb-2">Linear, Fast (Winner)</p>
-                  <div className="w-full bg-white dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                    <div className="bg-indigo-600 h-full" style={{ width: '91%' }}></div>
-                  </div>
-                  <span className="text-xs font-bold mt-1 text-slate-600 dark:text-slate-300">91% F1-Score</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+          {/* STEP 4: OLS Selection */}
+          <TimelineItem 
+            step="04"
+            title="OLS Feature Selection"
+            icon={<Binary className="h-6 w-6 text-white" />}
+            color="bg-blue-600"
+            description="This is the core innovation. Instead of using all 10,000 features, we use Orthogonal Least Squares to mathematically select the top 1,500 features that contribute most to minimizing the error variance."
+            codeSnippet={`# Custom OLS Implementation Logic
+def ols_selection(X, y, n_features=1500):
+    selected_indices = []
+    
+    # Iteratively select features that are 
+    # most orthogonal to the error space
+    for i in range(n_features):
+        best_idx = find_next_best_feature(X, y, selected_indices)
+        selected_indices.append(best_idx)
+        
+    return X[:, selected_indices]
 
+X_optimized = ols_selection(X, y)`}
+            alignment="right"
+          />
+
+           {/* STEP 5: Model Training */}
+           <TimelineItem 
+            step="05"
+            title="Model Training"
+            icon={<BarChart2 className="h-6 w-6 text-white" />}
+            color="bg-emerald-500"
+            description="The optimized feature set is fed into a Logistic Regression classifier. We use class weighting to handle the dataset imbalance. This lightweight model achieves superior performance due to the high quality of selected features."
+            codeSnippet={`from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+
+# Train on optimized features
+model = LogisticRegression(class_weight='balanced')
+model.fit(X_train_ols, y_train)
+
+# Inference
+y_pred = model.predict(X_test_ols)
+print(classification_report(y_test, y_pred))`}
+            alignment="left"
+          />
+
+        </div>
       </div>
+
+      {/* Footer CTA */}
+      <div className="bg-slate-900 dark:bg-black py-16 px-4 text-center">
+        <h3 className="text-2xl font-bold text-white mb-4">Ready to test the architecture?</h3>
+        <p className="text-slate-400 mb-8">Experience the speed of OLS-optimized inference in real-time.</p>
+        <button 
+          onClick={() => document.getElementById('navbar-demo')?.click()} 
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all"
+        >
+          Launch Live Demo
+        </button>
+      </div>
+
     </div>
   );
+};
+
+// --- Subcomponents for Layout ---
+
+interface TimelineItemProps {
+  step: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+  codeSnippet: string;
+  alignment: 'left' | 'right';
+}
+
+const TimelineItem: React.FC<TimelineItemProps> = ({ step, title, description, icon, color, codeSnippet, alignment }) => {
+  return (
+    <div className={`flex flex-col md:flex-row items-center justify-between mb-24 relative ${alignment === 'right' ? 'md:flex-row-reverse' : ''}`}>
+      
+      {/* Center Dot (Desktop Only) */}
+      <div className={`hidden md:flex absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center justify-center h-12 w-12 rounded-full border-4 border-slate-50 dark:border-slate-950 ${color} z-10 shadow-lg`}>
+        {icon}
+      </div>
+
+      {/* Content Side */}
+      <div className="w-full md:w-5/12 mb-8 md:mb-0">
+        <div className={`flex flex-col ${alignment === 'left' ? 'md:items-end md:text-right' : 'md:items-start md:text-left'} text-center`}>
+          <div className={`inline-flex items-center justify-center md:hidden h-12 w-12 rounded-full ${color} mb-4 shadow-lg`}>
+            {icon}
+          </div>
+          <span className={`text-6xl font-black text-slate-100 dark:text-slate-800 leading-none mb-2 select-none`}>
+            {step}
+          </span>
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{title}</h3>
+          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      {/* Code Side */}
+      <div className="w-full md:w-5/12">
+        <div className="rounded-xl overflow-hidden shadow-2xl bg-[#1e1e1e] border border-slate-800 transform transition-transform hover:scale-[1.02] duration-300 group">
+          
+          {/* Mac-style Window Header */}
+          <div className="bg-[#2d2d2d] px-4 py-3 flex items-center justify-between">
+             <div className="flex space-x-2">
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+             </div>
+             <div className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
+               <Terminal className="h-3 w-3" />
+               python
+             </div>
+          </div>
+
+          {/* Code Content */}
+          <div className="p-4 overflow-x-auto">
+            <pre className="font-mono text-sm leading-relaxed">
+              <code className="block">
+                {codeSnippet.split('\n').map((line, i) => (
+                  <div key={i} className="table-row">
+                     <span className="table-cell select-none text-slate-600 text-right pr-4 w-8">{i + 1}</span>
+                     <span 
+                       className="table-cell" 
+                       dangerouslySetInnerHTML={{ 
+                         __html: highlightSyntax(line) 
+                       }} 
+                     />
+                  </div>
+                ))}
+              </code>
+            </pre>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+// Simple syntax highlighter for visual effect
+const highlightSyntax = (line: string) => {
+  let processed = line
+    .replace(/#.*/g, '<span class="text-slate-500 italic">$&</span>') // Comments
+    .replace(/'[^']*'/g, '<span class="text-green-400">$&</span>') // Strings
+    .replace(/"[^"]*"/g, '<span class="text-green-400">$&</span>') // Double Quote Strings
+    .replace(/\b(import|from|def|return|for|in|if|else|print)\b/g, '<span class="text-pink-400 font-bold">$&</span>') // Keywords
+    .replace(/\b(pd|re|nltk|sklearn|np)\b/g, '<span class="text-blue-400">$&</span>') // Libraries
+    .replace(/\b(read_csv|sub|lemmatize|split|join|fit_transform|predict|fit)\b/g, '<span class="text-yellow-300">$&</span>'); // Functions
+    
+  return processed;
 };
 
 export default HowItWorks;

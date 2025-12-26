@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Users, GraduationCap, MapPin, Award, Mail, Linkedin, Github } from 'lucide-react';
+import { User, Users, GraduationCap, MapPin, Award, Mail, Linkedin, Github, ExternalLink } from 'lucide-react';
 
 const Team: React.FC = () => {
   const teamMembers = [
@@ -41,19 +41,19 @@ const Team: React.FC = () => {
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       
       {/* Hero Header */}
-      <div className="relative bg-slate-900 dark:bg-black text-white py-20 overflow-hidden">
+      <div className="relative bg-slate-900 dark:bg-black text-white py-24 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80')] opacity-10 bg-cover bg-center mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90 dark:to-slate-950/95"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-950"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 mb-6 border border-white/20">
+          <div className="inline-flex items-center space-x-2 bg-white/5 backdrop-blur-md rounded-full px-4 py-1.5 mb-6 border border-white/10">
             <Users className="h-4 w-4 text-blue-300" />
-            <span className="text-sm font-medium tracking-wider uppercase text-blue-100">Batch No: 14</span>
+            <span className="text-sm font-medium tracking-wider uppercase text-blue-100">CS Batch 14</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-            Capstone Project <span className="text-blue-400">Review I</span>
+            Capstone Project <span className="text-blue-400">Team</span>
           </h1>
-          <p className="text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-slate-400 font-light max-w-3xl mx-auto">
             Hate Speech Detection using Orthogonal Least Squares
           </p>
         </div>
@@ -61,88 +61,94 @@ const Team: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10 w-full pb-20">
         
-        {/* Faculty Guide Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden mb-16 transform transition-all hover:shadow-2xl">
-          <div className="bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-700 dark:to-slate-800 px-8 py-4 border-b border-slate-200 dark:border-slate-600 flex items-center justify-between">
-            <h3 className="text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider text-sm flex items-center">
-              <Award className="h-4 w-4 mr-2 text-amber-500" />
-              Project Guidance
-            </h3>
-            <div className="h-2 w-20 bg-amber-400 rounded-full"></div>
-          </div>
-          
-          <div className="p-8 md:p-12 flex flex-col md:flex-row items-center gap-10">
-             <div className="flex-shrink-0">
-               <div className="h-32 w-32 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center border-4 border-white dark:border-slate-600 shadow-lg relative">
-                 <User className="h-16 w-16 text-slate-400 dark:text-slate-300" />
-                 <div className="absolute bottom-0 right-0 bg-amber-500 p-2 rounded-full border-4 border-white dark:border-slate-600">
-                   <Award className="h-4 w-4 text-white" />
-                 </div>
+        {/* Faculty Guide Section - Premium Card Design */}
+        <div className="relative mb-20 group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="grid md:grid-cols-12 gap-0">
+               {/* Left accent panel */}
+               <div className="hidden md:block md:col-span-1 bg-amber-500 flex flex-col items-center justify-center text-white py-4">
+                  <span className="vertical-text transform -rotate-90 tracking-[0.2em] font-bold text-xs whitespace-nowrap opacity-80 uppercase">Project Guide</span>
                </div>
-             </div>
-             
-             <div className="flex-1 text-center md:text-left space-y-2">
-               <h4 className="text-2xl font-bold text-slate-900 dark:text-white">Assistant Professor</h4>
-               <p className="text-slate-600 dark:text-slate-300 text-lg">Department of Artificial Intelligence & Data Science</p>
-               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 text-sm text-slate-500 dark:text-slate-400">
-                  <div className="flex items-center px-4 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                    <GraduationCap className="h-5 w-5 mr-2 text-slate-700 dark:text-slate-300" />
-                    GITAM School of CSE
+               
+               {/* Content */}
+               <div className="md:col-span-11 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                  <div className="flex-shrink-0 relative">
+                    <div className="h-32 w-32 md:h-40 md:w-40 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center border-[6px] border-white dark:border-slate-800 shadow-xl relative z-10">
+                      <User className="h-16 w-16 md:h-20 md:w-20 text-slate-400 dark:text-slate-500" />
+                    </div>
+                    <div className="absolute -bottom-3 -right-3 bg-amber-500 text-white p-3 rounded-full border-4 border-white dark:border-slate-800 z-20 shadow-sm">
+                      <Award className="h-5 w-5" />
+                    </div>
                   </div>
-                  <div className="flex items-center px-4 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                    <MapPin className="h-5 w-5 mr-2 text-slate-700 dark:text-slate-300" />
-                    Bengaluru, Karnataka
+
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-3">
+                      Faculty Supervisor
+                    </div>
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Dr. Kothuru Srinivasulu</h2>
+                    <p className="text-lg text-slate-600 dark:text-slate-400 font-medium mb-6">Department of Artificial Intelligence & Data Science</p>
+                    
+                    <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                      <div className="flex items-center px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <GraduationCap className="h-4 w-4 mr-2 text-slate-400" />
+                        GITAM School of Technology
+                      </div>
+                      <div className="flex items-center px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-300 font-medium">
+                        <MapPin className="h-4 w-4 mr-2 text-slate-400" />
+                        Bengaluru
+                      </div>
+                      <button className="flex items-center px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-sm text-blue-600 dark:text-blue-400 font-medium transition-colors">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        View Profile
+                      </button>
+                    </div>
                   </div>
                </div>
-             </div>
+            </div>
           </div>
         </div>
 
         {/* Team Members Grid */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-l-4 border-blue-600 pl-4">
-            Meet the Team
-          </h3>
+          <div className="flex items-center mb-8">
+             <div className="h-8 w-1 bg-blue-600 rounded-full mr-4"></div>
+             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+               Student Developers
+             </h3>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {teamMembers.map((member, index) => (
               <div 
                 key={index} 
-                className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 transform hover:-translate-y-2"
               >
-                {/* Card Header Gradient */}
-                <div className={`h-24 bg-gradient-to-r ${member.gradient} relative`}>
-                  <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
-                    <div className="h-20 w-20 rounded-2xl bg-white dark:bg-slate-800 p-1 shadow-lg rotate-3 group-hover:rotate-0 transition-transform duration-300">
-                       <div className={`h-full w-full rounded-xl bg-gradient-to-br ${member.gradient} flex items-center justify-center text-white text-xl font-bold`}>
-                         {member.initials}
-                       </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Minimal Header */}
+                <div className={`h-2 w-full bg-gradient-to-r ${member.gradient}`}></div>
 
-                {/* Card Body */}
-                <div className="pt-12 pb-6 px-6 text-center">
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{member.name}</h4>
-                  <p className="text-xs font-mono text-slate-400 mb-4">{member.id}</p>
+                <div className="p-8 flex flex-col items-center">
+                  <div className={`h-20 w-20 rounded-2xl bg-gradient-to-br ${member.gradient} flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    {member.initials}
+                  </div>
+
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white text-center">{member.name}</h4>
+                  <p className="text-xs font-mono text-slate-400 mt-1 mb-4">{member.id}</p>
                   
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${member.accent}`}>
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${member.accent} mb-6`}>
                     {member.role}
                   </span>
 
-                  {/* Divider */}
-                  <div className="w-full h-px bg-slate-100 dark:bg-slate-700 my-6"></div>
-
-                  {/* Social Links (Mock) */}
-                  <div className="flex justify-center space-x-4">
-                     <button className="text-slate-400 hover:text-blue-600 transition-colors">
+                  <div className="flex space-x-4 w-full justify-center pt-6 border-t border-slate-100 dark:border-slate-800">
+                     <a href="#" className="text-slate-400 hover:text-blue-600 transition-colors">
                        <Linkedin className="h-5 w-5" />
-                     </button>
-                     <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                     </a>
+                     <a href="#" className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                        <Github className="h-5 w-5" />
-                     </button>
-                     <button className="text-slate-400 hover:text-red-500 transition-colors">
+                     </a>
+                     <a href="#" className="text-slate-400 hover:text-red-500 transition-colors">
                        <Mail className="h-5 w-5" />
-                     </button>
+                     </a>
                   </div>
                 </div>
               </div>
@@ -150,16 +156,14 @@ const Team: React.FC = () => {
           </div>
         </div>
 
-        {/* University Logo / Footer Section */}
-        <div className="flex justify-center mt-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-           <div className="flex items-center space-x-3">
-              <div className="h-12 w-12 bg-slate-900 dark:bg-slate-800 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xs">GITAM</span>
+        {/* University Footer Section */}
+        <div className="flex justify-center mt-20">
+           <div className="flex flex-col items-center opacity-40 hover:opacity-80 transition-opacity duration-500">
+              <div className="h-14 w-14 bg-slate-900 dark:bg-white rounded-full flex items-center justify-center mb-3">
+                <span className="text-white dark:text-slate-900 font-bold text-xs tracking-tighter">GITAM</span>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest">GITAM University</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Department of Computer Science & Engineering</p>
-              </div>
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-300 uppercase tracking-widest text-center">GITAM (Deemed to be University)<br/>Bengaluru Campus</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Department of Artificial Intelligence & Data Science</p>
            </div>
         </div>
 

@@ -13,7 +13,7 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
         <div className="max-w-5xl mx-auto">
           <div className="inline-flex items-center space-x-2 bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-full px-3 py-1 mb-8 shadow-sm">
             <span className="flex h-2 w-2 rounded-full bg-blue-600"></span>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">University Capstone Project 2025</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300">University Capstone Project 2026</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight">
             Detecting Hate Speech with <br className="hidden md:block" />
