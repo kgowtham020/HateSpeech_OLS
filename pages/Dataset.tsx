@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DatasetRow } from '../types';
-import { ArrowRight, ChevronLeft, ChevronRight, Database, Search } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Database, Search, Download } from 'lucide-react';
 
 const Dataset: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,20 +53,39 @@ const Dataset: React.FC = () => {
   const currentRows = sampleData.slice(indexOfFirstRow, indexOfLastRow);
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
 
-  // Simulates jumping pages for the demo effect (since we only have 25 real items)
   const handlePageChange = (newPage: number) => {
-    // If user goes beyond our mock data limit (3 pages), we just cycle back or stay on page 1/2/3 for demo
-    // In a real app, this would fetch from API
     if (newPage < 1) return;
-    
-    // For demo purposes, we only allow navigating the first 3 pages where we have data
-    // But we let the number indicate there are many pages
     if (newPage > 3 && newPage < totalPages) {
-       // Just pretend we moved
        setCurrentPage(newPage);
     } else {
        setCurrentPage(newPage);
     }
+  };
+
+  // Function to create a mock CSV download
+  const downloadDataset = () => {
+    // This is the sample CSV content corresponding to the file created in datasets/labeled_data.csv
+    const csvContent = `id,count,hate_speech,offensive_language,neither,class,tweet
+0,3,0,0,3,2,"!!! RT @mayasolovely: As a woman you shouldn't complain about cleaning up your house. &amp; as a man you should always take the trash out..."
+1,3,0,3,0,1,"!!!!! RT @mleew17: boy dats cold...tyga dwn bad for cuffin dat hoe in the 1st place!!"
+2,3,0,3,0,1,"!!!!!!! RT @UrKindOfBrand Dawg!!!! RT @80sbaby4life: You ever fuck a bitch and she start to cry? You be confused as shit"
+3,3,0,2,1,1,"!!!!!!!!! RT @C_G_Anderson: @viva_based she look like a tranny"
+4,6,0,6,0,1,"!!!!!!!!!!!!! RT @ShenikaRoberts: The shit you hear about me might be true or it might be faker than the bitch who told it to ya"
+5,3,1,2,0,1,"!!!!!!!!!!!!!!!!!!""@T_Madison_x: The shit just blows me..claim you so faithful and down for somebody but still fucking with hoes! &#128514;&#128514;&#128514;"""
+6,3,0,3,0,1,"!!!!!!""@__BrighterDays: I can not just sit up and HATE on another bitch .. I got too much shit going on!"""
+7,3,0,3,0,1,"!!!!&#8220;@selfiequeenbri: cause I'm tired of you big bitches coming for us skinny girls!!&#8221;"
+8,3,0,3,0,1,""" &amp; you might not get ya bitch back &amp; thats that """
+9,3,1,2,0,1,""" @rhythmixx_ :hobbies include: fighting Mariam"""
+10,3,0,3,0,1,""" Keeks is a bitch she curves everyone "" lol I walked into a conversation like this. Smh"`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'davidson_hate_speech_dataset.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -76,9 +95,18 @@ const Dataset: React.FC = () => {
            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Dataset Explorer</h2>
            <p className="mt-2 text-slate-600 dark:text-slate-400">Viewing the Davidson Hate Speech Dataset (Sample)</p>
         </div>
-        <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
-           <Database className="h-4 w-4 text-indigo-500" />
-           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Total Records: {totalRecords.toLocaleString()}</span>
+        <div className="mt-4 md:mt-0 flex items-center space-x-3">
+           <button 
+             onClick={downloadDataset}
+             className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+           >
+              <Download className="h-4 w-4" />
+              <span className="text-sm font-semibold">Download CSV</span>
+           </button>
+           <div className="flex items-center space-x-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+              <Database className="h-4 w-4 text-indigo-500" />
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Total Records: {totalRecords.toLocaleString()}</span>
+           </div>
         </div>
       </div>
 
