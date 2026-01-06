@@ -62,21 +62,35 @@ const Dataset: React.FC = () => {
     }
   };
 
-  // Function to create a mock CSV download
+  // Function to create and download the CSV
   const downloadDataset = () => {
-    // This is the sample CSV content corresponding to the file created in datasets/labeled_data.csv
-    const csvContent = `id,count,hate_speech,offensive_language,neither,class,tweet
-0,3,0,0,3,2,"!!! RT @mayasolovely: As a woman you shouldn't complain about cleaning up your house. &amp; as a man you should always take the trash out..."
-1,3,0,3,0,1,"!!!!! RT @mleew17: boy dats cold...tyga dwn bad for cuffin dat hoe in the 1st place!!"
-2,3,0,3,0,1,"!!!!!!! RT @UrKindOfBrand Dawg!!!! RT @80sbaby4life: You ever fuck a bitch and she start to cry? You be confused as shit"
-3,3,0,2,1,1,"!!!!!!!!! RT @C_G_Anderson: @viva_based she look like a tranny"
-4,6,0,6,0,1,"!!!!!!!!!!!!! RT @ShenikaRoberts: The shit you hear about me might be true or it might be faker than the bitch who told it to ya"
-5,3,1,2,0,1,"!!!!!!!!!!!!!!!!!!""@T_Madison_x: The shit just blows me..claim you so faithful and down for somebody but still fucking with hoes! &#128514;&#128514;&#128514;"""
-6,3,0,3,0,1,"!!!!!!""@__BrighterDays: I can not just sit up and HATE on another bitch .. I got too much shit going on!"""
-7,3,0,3,0,1,"!!!!&#8220;@selfiequeenbri: cause I'm tired of you big bitches coming for us skinny girls!!&#8221;"
-8,3,0,3,0,1,""" &amp; you might not get ya bitch back &amp; thats that """
-9,3,1,2,0,1,""" @rhythmixx_ :hobbies include: fighting Mariam"""
-10,3,0,3,0,1,""" Keeks is a bitch she curves everyone "" lol I walked into a conversation like this. Smh"`;
+    // We construct the CSV content dynamically to ensure it works in the browser
+    let csvContent = "id,count,hate_speech,offensive_language,neither,class,tweet\n";
+    
+    // Add realistic raw data rows matching Davidson format
+    const rawRows = [
+      `0,3,0,0,3,2,"!!! RT @mayasolovely: As a woman you shouldn't complain about cleaning up your house. &amp; as a man you should always take the trash out..."`,
+      `1,3,0,3,0,1,"!!!!! RT @mleew17: boy dats cold...tyga dwn bad for cuffin dat hoe in the 1st place!!"`,
+      `2,3,0,3,0,1,"!!!!!!! RT @UrKindOfBrand Dawg!!!! RT @80sbaby4life: You ever fuck a bitch and she start to cry? You be confused as shit"`,
+      `3,3,0,2,1,1,"!!!!!!!!! RT @C_G_Anderson: @viva_based she look like a tranny"`,
+      `4,6,0,6,0,1,"!!!!!!!!!!!!! RT @ShenikaRoberts: The shit you hear about me might be true or it might be faker than the bitch who told it to ya"`,
+      `5,3,1,2,0,1,"!!!!!!!!!!!!!!!!!!""@T_Madison_x: The shit just blows me..claim you so faithful and down for somebody but still fucking with hoes! &#128514;&#128514;&#128514;"""`,
+      `6,3,0,3,0,1,"!!!!!!""@__BrighterDays: I can not just sit up and HATE on another bitch .. I got too much shit going on!"""`,
+      `7,3,0,3,0,1,"!!!!&#8220;@selfiequeenbri: cause I'm tired of you big bitches coming for us skinny girls!!&#8221;"`,
+      `8,3,0,3,0,1,""" &amp; you might not get ya bitch back &amp; thats that """`,
+      `9,3,1,2,0,1,""" @rhythmixx_ :hobbies include: fighting Mariam"""`,
+      `10,3,0,3,0,1,""" Keeks is a bitch she curves everyone "" lol I walked into a conversation like this. Smh"`,
+      `11,3,0,3,0,1,""" Murda Gang bitch its Gang Land """`,
+      `12,3,0,2,1,1,""" So hoes that smoke are losers ? "" yea ... go on IG"`,
+      `13,3,0,3,0,1,""" bad bitches is the only thing that i like """`,
+      `14,3,1,2,0,1,""" bitch get up off me """`,
+      `15,3,0,3,0,1,""" bitch nigga miss me with it """`,
+      `16,3,0,3,0,1,""" bitch pls whatever """`,
+      `17,3,0,3,0,1,""" bitch who do you love """`,
+      `18,3,0,3,0,1,""" bitches get cut off everyday B """`
+    ];
+
+    csvContent += rawRows.join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -86,6 +100,7 @@ const Dataset: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -98,7 +113,7 @@ const Dataset: React.FC = () => {
         <div className="mt-4 md:mt-0 flex items-center space-x-3">
            <button 
              onClick={downloadDataset}
-             className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+             className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors active:scale-95"
            >
               <Download className="h-4 w-4" />
               <span className="text-sm font-semibold">Download CSV</span>

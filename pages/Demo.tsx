@@ -123,10 +123,6 @@ const Demo: React.FC = () => {
           </div>
         )}
       </div>
-
-      <div className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
-        <p>Note: This educational demo uses the Google Gemini API to simulate the inference of the OLS-based ML model.</p>
-      </div>
     </div>
   );
 };

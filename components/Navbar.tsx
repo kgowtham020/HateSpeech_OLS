@@ -216,10 +216,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
             </div>
             
             <div className="flex items-center justify-between text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-6">
-              <span className="flex items-center gap-1.5 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer">
                 <Github className="h-3.5 w-3.5" />
                 View Source
-              </span>
+              </a>
               <span>© 2026 CS Batch 14</span>
             </div>
           </div>
