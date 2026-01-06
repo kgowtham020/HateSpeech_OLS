@@ -1,13 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PredictionResult, ClassLabel } from "../types";
 
-// Initialize Gemini Client
-// In a real production environment, we would call a Python Flask API.
-// For this demo, we use Gemini to simulate the trained model's inference.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const analyzeText = async (text: string): Promise<PredictionResult> => {
+  // Access the API key injected by Vite
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    console.error("API_KEY is not defined");
+    throw new Error("API Key is missing. Please configure the API_KEY environment variable in your deployment settings.");
+  }
+
   try {
+    // Initialize the client lazily to avoid top-level crashes
+    const ai = new GoogleGenAI({ apiKey });
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `
@@ -65,6 +71,9 @@ export const analyzeText = async (text: string): Promise<PredictionResult> => {
 
   } catch (error) {
     console.error("Error analyzing text:", error);
+    if (error instanceof Error && error.message.includes("API Key")) {
+        throw error;
+    }
     throw new Error("Model inference failed. Please check your API connection.");
   }
 };

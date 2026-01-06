@@ -3,6 +3,12 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     
+    // Explicitly serve index.html for root path to ensure the app loads
+    if (url.pathname === '/') {
+       const response = await env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
+       if (response.status === 200) return response;
+    }
+
     // Attempt to fetch the requested asset from the uploaded 'dist' folder
     let response = await env.ASSETS.fetch(request);
 
