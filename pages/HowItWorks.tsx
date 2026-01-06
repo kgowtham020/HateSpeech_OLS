@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Filter, Binary, FileText, BarChart2, CheckCircle, Terminal, Code2 } from 'lucide-react';
+import { Database, Filter, Binary, FileText, BarChart2, Terminal, Code2 } from 'lucide-react';
 
 const HowItWorks: React.FC = () => {
   return (
