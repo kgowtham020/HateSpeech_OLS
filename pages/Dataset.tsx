@@ -62,35 +62,53 @@ const Dataset: React.FC = () => {
     }
   };
 
-  // Function to create and download the CSV
+  // Function to download the dataset CSV
   const downloadDataset = () => {
-    // We construct the CSV content dynamically to ensure it works in the browser
-    let csvContent = "id,count,hate_speech,offensive_language,neither,class,tweet\n";
-    
-    // Add realistic raw data rows matching Davidson format
-    const rawRows = [
-      `0,3,0,0,3,2,"!!! RT @mayasolovely: As a woman you shouldn't complain about cleaning up your house. &amp; as a man you should always take the trash out..."`,
-      `1,3,0,3,0,1,"!!!!! RT @mleew17: boy dats cold...tyga dwn bad for cuffin dat hoe in the 1st place!!"`,
-      `2,3,0,3,0,1,"!!!!!!! RT @UrKindOfBrand Dawg!!!! RT @80sbaby4life: You ever fuck a bitch and she start to cry? You be confused as shit"`,
-      `3,3,0,2,1,1,"!!!!!!!!! RT @C_G_Anderson: @viva_based she look like a tranny"`,
-      `4,6,0,6,0,1,"!!!!!!!!!!!!! RT @ShenikaRoberts: The shit you hear about me might be true or it might be faker than the bitch who told it to ya"`,
-      `5,3,1,2,0,1,"!!!!!!!!!!!!!!!!!!""@T_Madison_x: The shit just blows me..claim you so faithful and down for somebody but still fucking with hoes! &#128514;&#128514;&#128514;"""`,
-      `6,3,0,3,0,1,"!!!!!!""@__BrighterDays: I can not just sit up and HATE on another bitch .. I got too much shit going on!"""`,
-      `7,3,0,3,0,1,"!!!!&#8220;@selfiequeenbri: cause I'm tired of you big bitches coming for us skinny girls!!&#8221;"`,
-      `8,3,0,3,0,1,""" &amp; you might not get ya bitch back &amp; thats that """`,
-      `9,3,1,2,0,1,""" @rhythmixx_ :hobbies include: fighting Mariam"""`,
-      `10,3,0,3,0,1,""" Keeks is a bitch she curves everyone "" lol I walked into a conversation like this. Smh"`,
-      `11,3,0,3,0,1,""" Murda Gang bitch its Gang Land """`,
-      `12,3,0,2,1,1,""" So hoes that smoke are losers ? "" yea ... go on IG"`,
-      `13,3,0,3,0,1,""" bad bitches is the only thing that i like """`,
-      `14,3,1,2,0,1,""" bitch get up off me """`,
-      `15,3,0,3,0,1,""" bitch nigga miss me with it """`,
-      `16,3,0,3,0,1,""" bitch pls whatever """`,
-      `17,3,0,3,0,1,""" bitch who do you love """`,
-      `18,3,0,3,0,1,""" bitches get cut off everyday B """`
-    ];
-
-    csvContent += rawRows.join("\n");
+    // Exact content matching datasets/labeled_data.csv
+    const csvContent = `id,count,hate_speech,offensive_language,neither,class,tweet
+0,3,0,0,3,2,"!!! RT @mayasolovely: As a woman you shouldn't complain about cleaning up your house. &amp; as a man you should always take the trash out..."
+1,3,0,3,0,1,"!!!!! RT @mleew17: boy dats cold...tyga dwn bad for cuffin dat hoe in the 1st place!!"
+2,3,0,3,0,1,"!!!!!!! RT @UrKindOfBrand Dawg!!!! RT @80sbaby4life: You ever fuck a bitch and she start to cry? You be confused as shit"
+3,3,0,2,1,1,"!!!!!!!!! RT @C_G_Anderson: @viva_based she look like a tranny"
+4,6,0,6,0,1,"!!!!!!!!!!!!! RT @ShenikaRoberts: The shit you hear about me might be true or it might be faker than the bitch who told it to ya"
+5,3,1,2,0,1,"!!!!!!!!!!!!!!!!!!""@T_Madison_x: The shit just blows me..claim you so faithful and down for somebody but still fucking with hoes! &#128514;&#128514;&#128514;"""
+6,3,0,3,0,1,"!!!!!!""@__BrighterDays: I can not just sit up and HATE on another bitch .. I got too much shit going on!"""
+7,3,0,3,0,1,"!!!!&#8220;@selfiequeenbri: cause I'm tired of you big bitches coming for us skinny girls!!&#8221;"
+8,3,0,3,0,1,""" &amp; you might not get ya bitch back &amp; thats that """
+9,3,1,2,0,1,""" @rhythmixx_ :hobbies include: fighting Mariam"""
+10,3,0,3,0,1,""" Keeks is a bitch she curves everyone "" lol I walked into a conversation like this. Smh"
+11,3,0,3,0,1,""" Murda Gang bitch its Gang Land """
+12,3,0,2,1,1,""" So hoes that smoke are losers ? "" yea ... go on IG"
+13,3,0,3,0,1,""" bad bitches is the only thing that i like """
+14,3,1,2,0,1,""" bitch get up off me """
+15,3,0,3,0,1,""" bitch nigga miss me with it """
+16,3,0,3,0,1,""" bitch pls whatever """
+17,3,0,3,0,1,""" bitch who do you love """
+18,3,0,3,0,1,""" bitches get cut off everyday B """
+19,3,0,3,0,1,""" black bottle &amp; a bad bitch """
+20,3,0,3,0,1,""" broke bitch cant tell me nothing """
+21,3,0,3,0,1,""" cancel that bitch like nino """
+22,3,0,3,0,1,""" cant you see these hoes wont change """
+23,3,0,3,0,1,""" fuck no that bitch dont even suck dick """
+24,3,0,3,0,1,""" got ya bitch tip toeing on my hardwood floor """
+25,3,0,2,1,1,""" her pussy lips like Heaven Doors """
+26,3,0,3,0,1,""" hoe what you got for me """
+27,3,0,3,0,1,""" i met that pussy on Ocean Dr . i gave that pussy a pill """
+28,3,0,3,0,1,""" i need a trippy bitch who fuck on Hennessy """
+29,3,0,3,0,1,""" i spend my money on hoes i spend my money on hoes """
+30,3,0,3,0,1,""" i'd rather fuck a bitch from the projects """
+31,3,0,3,0,1,""" i'm taking all you niggas bitches """
+32,3,0,3,0,1,""" if you aint bout that trap life bitch you aint bout me """
+33,3,0,3,0,1,""" if you be my bitch i'll be your killer """
+34,3,0,3,0,1,""" im a pimp by blood not relations """
+35,3,0,3,0,1,""" is that your bitch ? she aint yours no more """
+36,3,0,3,0,1,""" it's a difference between a chinchilla &amp; a bitch nigga """
+37,3,0,3,0,1,""" it's a hoe out there for everyone """
+38,3,0,3,0,1,""" its just me &amp; my bitch """
+39,3,0,3,0,1,""" like a bitch i'm raising my price """
+85,3,2,1,0,0,"@Blackman38Tide @Whignewtons @Warnstills @GOP momma said no pussy cats inside the house"
+89,3,3,0,0,0,"@CB_Baby24 @white_thunduh alsarabsss"
+110,3,3,0,0,0,"@DevilGrimz @VigxRArts you're fucking gay, blacklisted hoe holding pussy."`;
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);

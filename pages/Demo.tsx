@@ -48,10 +48,6 @@ const Demo: React.FC = () => {
     <div className="max-w-3xl mx-auto py-12 px-4">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Live Model Demo</h2>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Enter text below to test the classifier. The model will preprocess the text (TF-IDF) 
-          and classify it using the trained logic.
-        </p>
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">

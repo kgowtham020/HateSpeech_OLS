@@ -22,6 +22,8 @@ export const analyzeText = async (text: string): Promise<PredictionResult> => {
         Text to analyze: "${text}"
       `,
       config: {
+        // Optimize for speed by setting thinking budget to 0
+        thinkingConfig: { thinkingBudget: 0 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
