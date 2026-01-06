@@ -1,5 +1,5 @@
 {
-  "name": "ols-hatespeech-detection",
+  "name": "hatespeech",
   "main": "worker.js",
   "compatibility_date": "2024-03-20",
   "assets": {
