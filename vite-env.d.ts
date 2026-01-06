@@ -1,8 +1,10 @@
-// Removed reference to vite/client as it was causing type definition errors
+// Fix for "Cannot redeclare block-scoped variable 'process'"
+// Instead of redeclaring 'process' (which conflicts with existing definitions),
+// we augment the NodeJS namespace to include our custom environment variables.
 
-declare var process: {
-  env: {
+declare namespace NodeJS {
+  interface ProcessEnv {
     API_KEY: string;
     [key: string]: string | undefined;
   }
-};
+}
