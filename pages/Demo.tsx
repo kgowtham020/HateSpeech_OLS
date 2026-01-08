@@ -19,8 +19,11 @@ const Demo: React.FC = () => {
     try {
       const prediction = await analyzeText(inputText);
       setResult(prediction);
-    } catch (err) {
-      setError("An error occurred during classification. Please check your API Key or try again.");
+    } catch (err: any) {
+      console.error("Caught error in Demo:", err);
+      // Display the exact error message. If err.message is empty, show a specific fallback.
+      const errorMessage = err.message || "Unknown error occurred. Please check console.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -92,7 +95,11 @@ const Demo: React.FC = () => {
                 <AlertTriangle className="h-5 w-5 text-red-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
+                <h3 className="text-sm font-bold text-red-800 dark:text-red-100">Analysis Failed</h3>
+                <p className="text-sm text-red-700 dark:text-red-200 mt-1">{error}</p>
+                <p className="text-xs text-red-600 dark:text-red-300 mt-2">
+                  Troubleshooting: Check if API_KEY is set in Cloudflare Settings.
+                </p>
               </div>
             </div>
           </div>
