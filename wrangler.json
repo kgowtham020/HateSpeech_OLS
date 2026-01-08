@@ -1,7 +1,10 @@
 {
-  "name": "hatespeech",
+  "name": "ols-hatespeech-detection",
   "main": "worker.js",
   "compatibility_date": "2024-03-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS"
