@@ -58,7 +58,7 @@ export default {
         
         if (audio) {
             // Multimodal Request (Audio + Instructions)
-            // Ensure mimeType is valid. If frontend sent empty string, fallback to a safe default but log it.
+            // Ensure mimeType is valid. If frontend sent empty string, fallback to a safe default.
             const mimeType = audio.mimeType || "audio/webm";
             
             contents = [

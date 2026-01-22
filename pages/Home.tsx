@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Cpu, Database, MessageSquare, Globe, Server, Lock, Mic } from 'lucide-react';
+import { ShieldCheck, Cpu, MessageSquare, Globe, Server, Lock, Mic } from 'lucide-react';
 
 interface HomeProps {
   onStart: () => void;
