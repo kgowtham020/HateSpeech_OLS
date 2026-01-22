@@ -58,7 +58,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
     // 1. Feature Detection for browser support
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       // Check if this is due to insecure context
-      if (window.isSecureContext === false) {
+      const isSecure = (window as any).isSecureContext;
+      if (isSecure === false) {
           console.warn("Microphone requires HTTPS.");
       } else {
           console.warn("Browser does not support mediaDevices.");

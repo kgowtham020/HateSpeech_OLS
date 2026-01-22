@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, AlertTriangle, CheckCircle, Info, Loader2, Mic, Square, Trash2, Volume2, Lock, MessageSquare, RotateCcw, Settings } from 'lucide-react';
+import { Send, AlertTriangle, CheckCircle, Info, Loader2, Mic, Square, Trash2, Volume2, Lock, MessageSquare, RotateCcw } from 'lucide-react';
 import { analyzeText } from '../services/geminiService';
 import { PredictionResult, ClassLabel } from '../types';
 
@@ -158,7 +158,9 @@ const Demo: React.FC = () => {
     
     // 1. Browser & Security Checks
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        if (window.isSecureContext === false) {
+        // Safe check for isSecureContext to avoid TS build errors if property is missing in definition
+        const isSecure = (window as any).isSecureContext;
+        if (isSecure === false) {
            handlePermissionError({ name: 'SecurityError', message: 'Insecure Context' });
         } else {
            handlePermissionError({ name: 'NotFoundError', message: 'Browser API not supported' });
@@ -236,17 +238,7 @@ const Demo: React.FC = () => {
         recognitionRef.current.lang = 'en-US';
 
         recognitionRef.current.onresult = (event: any) => {
-          let interimTranscript = '';
-          let finalTranscript = '';
-          
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
-            } else {
-              interimTranscript += event.results[i][0].transcript;
-            }
-          }
-          
+          // Flatten results to a single string
           const currentTranscript = Array.from(event.results)
             .map((result: any) => result[0].transcript)
             .join('');
