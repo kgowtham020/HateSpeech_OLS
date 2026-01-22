@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BrainCircuit, 
   Menu, 
@@ -12,7 +12,10 @@ import {
   Play, 
   Users,
   ChevronRight,
-  Github
+  Github,
+  Mic,
+  Check,
+  AlertCircle
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -25,6 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  const [micStatus, setMicStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // Handle scroll effect for navbar background
   useEffect(() => {
@@ -49,6 +53,45 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
     setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleMicRequest = useCallback(async () => {
+    // 1. Feature Detection for browser support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      // Check if this is due to insecure context
+      if (window.isSecureContext === false) {
+          console.warn("Microphone requires HTTPS.");
+      } else {
+          console.warn("Browser does not support mediaDevices.");
+      }
+      setMicStatus('error');
+      setTimeout(() => setMicStatus('idle'), 4000);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If successful, stop immediately just to confirm permission
+      stream.getTracks().forEach(track => track.stop());
+      setMicStatus('success');
+      setTimeout(() => setMicStatus('idle'), 3000);
+    } catch (err: any) {
+      // Gracefully handle denial without spamming "Error" in console
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+         console.warn("Microphone permission denied by user.");
+      } else if (err.name === 'NotFoundError') {
+         console.warn("No microphone found.");
+      } else {
+         console.error("Error checking microphone:", err);
+      }
+      setMicStatus('error');
+      setTimeout(() => setMicStatus('idle'), 4000);
+    }
+  }, []);
+
+  // Automatically request permission on component mount (page reload)
+  useEffect(() => {
+    handleMicRequest();
+  }, [handleMicRequest]);
 
   return (
     <>
@@ -197,6 +240,30 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
 
           {/* Drawer Footer */}
           <div className="p-8 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800">
+            
+            {/* Microphone Permission Toggle */}
+            <button
+              onClick={handleMicRequest}
+              disabled={micStatus === 'success'}
+              className={`w-full flex items-center justify-center space-x-2 py-3 rounded-xl mb-6 font-medium transition-all duration-300 ${
+                micStatus === 'idle' 
+                  ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700' 
+                  : micStatus === 'success'
+                    ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+              }`}
+            >
+              {micStatus === 'idle' && <Mic className="h-4 w-4" />}
+              {micStatus === 'success' && <Check className="h-4 w-4" />}
+              {micStatus === 'error' && <AlertCircle className="h-4 w-4" />}
+              
+              <span>
+                {micStatus === 'idle' && "Check Mic Permissions"}
+                {micStatus === 'success' && "Access Granted"}
+                {micStatus === 'error' && "Access Denied / Secure Context"}
+              </span>
+            </button>
+
             <div className="flex justify-between items-center mb-6">
                <span className="text-sm font-semibold text-slate-900 dark:text-white">Theme</span>
                <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-lg">

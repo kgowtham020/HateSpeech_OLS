@@ -8,6 +8,7 @@ export interface PredictionResult {
   label: ClassLabel;
   confidence: number;
   explanation: string;
+  transcription?: string; // Added to support audio-to-text feedback
 }
 
 export interface DatasetRow {

@@ -1,13 +1,17 @@
 import { PredictionResult, ClassLabel } from "../types";
 
-export const analyzeText = async (text: string): Promise<PredictionResult> => {
+export const analyzeText = async (
+  text?: string, 
+  audio?: { data: string, mimeType: string }
+): Promise<PredictionResult> => {
   try {
     const response = await fetch('/api/predict', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text }),
+      // Send text, audio, or both
+      body: JSON.stringify({ text, audio }),
     });
 
     // Handle non-OK responses (4xx, 5xx)
@@ -19,7 +23,6 @@ export const analyzeText = async (text: string): Promise<PredictionResult> => {
       } else {
         // If the server returns HTML (e.g. Cloudflare error page) or text, read it
         const errorText = await response.text();
-        // Truncate if too long (html page)
         const shortError = errorText.slice(0, 100); 
         throw new Error(`Server Error (${response.status}): ${shortError}...`);
       }
@@ -31,14 +34,14 @@ export const analyzeText = async (text: string): Promise<PredictionResult> => {
       return {
         label: ClassLabel.NORMAL,
         confidence: 0.0,
-        explanation: "Could not classify text. The model returned a valid response but missing label.",
+        explanation: "Could not classify input. The model returned a valid response but missing label.",
       };
     }
 
     return result as PredictionResult;
 
   } catch (error: any) {
-    console.error("Error analyzing text:", error);
+    console.error("Error analyzing input:", error);
     // Re-throw the exact error so Demo.tsx displays it
     throw error;
   }

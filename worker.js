@@ -32,10 +32,9 @@ export default {
         }
 
         // 2. Parse User Input
-        let text;
+        let body;
         try {
-          const body = await request.json();
-          text = body.text;
+          body = await request.json();
         } catch (e) {
           return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
              status: 400,
@@ -43,8 +42,10 @@ export default {
           });
         }
 
-        if (!text || typeof text !== 'string' || !text.trim()) {
-          return new Response(JSON.stringify({ error: "Input text is required and cannot be empty." }), {
+        const { text, audio } = body;
+
+        if (!text && !audio) {
+          return new Response(JSON.stringify({ error: "Input text or audio is required." }), {
             status: 400,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
@@ -53,25 +54,66 @@ export default {
         // 3. Call Gemini API
         const ai = new GoogleGenAI({ apiKey });
         
-        // Handle short/nonsense inputs by adjusting prompt slightly
-        const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: `
-            Act as a refined Machine Learning classifier trained on the Davidson Hate Speech Dataset.
-            Your task is to classify the provided text into one of three categories:
-            1. Hate Speech (Racist, sexist, or directed hate towards a protected group)
-            2. Offensive Language (Vulgar, rude, or inappropriate, but not hate speech)
-            3. Normal Speech (Neutral, positive, or benign)
+        let contents = [];
+        
+        if (audio) {
+            // Multimodal Request (Audio + Instructions)
+            // Ensure mimeType is valid. If frontend sent empty string, fallback to a safe default but log it.
+            const mimeType = audio.mimeType || "audio/webm";
             
-            If the text is nonsense, too short, or meaningless (like "kc", "asdf"), classify it as "Normal Speech" with low confidence.
+            contents = [
+                {
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: audio.data
+                    }
+                },
+                {
+                    text: `You are an expert Hate Speech Detection system.
+                    
+                    TASK:
+                    1. Listen to the audio provided.
+                    2. Transcribe the speech exactly as spoken into the 'transcription' field.
+                    3. Analyze the sentiment, tone, and vocabulary.
+                    4. Classify it into exactly one of these three categories:
+                       - "Hate Speech" (Direct attacks, slurs, threats based on protected characteristics)
+                       - "Offensive Language" (Vulgar, rude, insults, profanity, but NOT hate speech)
+                       - "Normal Speech" (Neutral, benign, or positive)
 
-            Analyze the text accurately. Provide a confidence score (0.0 to 1.0) and a brief academic explanation.
-            
-            Text to analyze: "${text}"
-          `,
+                    IMPORTANT:
+                    - If the audio is silent or unintelligible, return "Normal Speech" and explain that no speech was detected.
+                    - If the audio is short/cut off but contains a slur, classify based on available context.
+                    
+                    Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.`
+                }
+            ];
+        } else {
+            // Text Request
+            contents = [
+                {
+                    text: `Act as a refined Machine Learning classifier trained on the Davidson Hate Speech Dataset.
+                    Your task is to classify the provided text into one of three categories:
+                    1. Hate Speech (Racist, sexist, or directed hate towards a protected group)
+                    2. Offensive Language (Vulgar, rude, or inappropriate, but not hate speech)
+                    3. Normal Speech (Neutral, positive, or benign)
+                    
+                    If the text is nonsense, too short, or meaningless (like "kc", "asdf"), classify it as "Normal Speech" with low confidence.
+
+                    Analyze the text accurately. Provide a confidence score (0.0 to 1.0) and a brief academic explanation.
+                    
+                    Text to analyze: "${text}"`
+                }
+            ];
+        }
+        
+        const response = await ai.models.generateContent({
+          model: "gemini-3-flash-preview", // Supports multimodal
+          contents: contents,
           config: {
             thinkingConfig: { thinkingBudget: 0 },
             responseMimeType: "application/json",
+            // We use BLOCK_NONE to ensure the model actually processes the offensive content for classification
+            // rather than refusing to answer.
             safetySettings: [
               { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
               { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -97,17 +139,20 @@ export default {
                   type: Type.STRING,
                   description: "A brief sentence explaining the classification logic.",
                 },
+                transcription: {
+                  type: Type.STRING,
+                  description: "The text extracted from the audio (if audio provided), or the input text.",
+                }
               },
               required: ["label", "confidence", "explanation"],
             },
           },
         });
 
-        // 4. Return the result
         const resultJSON = response.text;
         
         if (!resultJSON) {
-           throw new Error("Model returned empty response (possibly blocked or filtered).");
+           throw new Error("Model returned empty response.");
         }
         
         return new Response(resultJSON, {
@@ -116,7 +161,6 @@ export default {
 
       } catch (error) {
         console.error("Worker Execution Error:", error);
-        // Return the exact error message to the client for debugging
         return new Response(JSON.stringify({ 
           error: `Worker Error: ${error.message || error.toString()}` 
         }), {

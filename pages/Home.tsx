@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Cpu, Database, MessageSquare, Globe, Server, Lock } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Cpu, Database, MessageSquare, Globe, Server, Lock, Mic } from 'lucide-react';
 
 interface HomeProps {
   onStart: () => void;
@@ -16,21 +16,21 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">University Capstone Project 2026</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight">
-            Detecting Hate Speech with <br className="hidden md:block" />
+            Multimodal Hate Speech Detection <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              OLS Feature Selection
+              Voice & Text Analysis
             </span>
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
-            An educational machine learning prototype that demonstrates how <strong>Orthogonal Least Squares</strong> can optimize text classification models to identify toxic content efficiently.
+            An advanced machine learning prototype that detects toxic content in both <strong>written text</strong> and <strong>spoken audio</strong> using OLS feature optimization.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
               onClick={onStart}
               className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200 transform hover:-translate-y-1"
             >
-              Try the Demo
-              <ArrowRight className="ml-2 h-5 w-5" />
+              Try Voice Demo
+              <Mic className="ml-2 h-5 w-5" />
             </button>
             <button
               onClick={() => document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth' })}
@@ -47,11 +47,11 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all">
             <div className="h-14 w-14 bg-indigo-50 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center mb-6">
-              <Database className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
+              <Mic className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Davidson Dataset</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Voice Detection</h3>
             <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-              Trained on thousands of labelled tweets to distinguish between specific hate speech, general offensive language, and normal speech patterns.
+              Analyzes audio tone and transcribed content simultaneously to detect aggressive speech patterns that text-only models miss.
             </p>
           </div>
           <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all">
@@ -132,21 +132,21 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
                 <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-200 dark:bg-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-200 font-bold">1</div>
                 <div className="ml-4">
                   <h4 className="text-lg font-bold text-indigo-900 dark:text-indigo-300">Input Reception</h4>
-                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">User posts a comment. The app sends the text to our Python Flask API.</p>
+                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">User posts a comment or speaks. The app sends data to our Python/Node API.</p>
                 </div>
               </div>
               <div className="flex items-start">
                 <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-200 dark:bg-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-200 font-bold">2</div>
                 <div className="ml-4">
                   <h4 className="text-lg font-bold text-indigo-900 dark:text-indigo-300">Real-time Inference</h4>
-                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">The pre-trained OLS model processes the text in milliseconds.</p>
+                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">The pre-trained OLS model processes the input in milliseconds.</p>
                 </div>
               </div>
               <div className="flex items-start">
                 <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-200 dark:bg-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-200 font-bold">3</div>
                 <div className="ml-4">
                   <h4 className="text-lg font-bold text-indigo-900 dark:text-indigo-300">Action Trigger</h4>
-                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">API returns "Hate Speech". The app automatically hides the comment.</p>
+                  <p className="text-indigo-700 dark:text-indigo-300/80 text-sm">API returns "Hate Speech". The app automatically hides the content.</p>
                 </div>
               </div>
             </div>
@@ -164,18 +164,20 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
 def predict():
     data = request.json
     text = data['text']
+    audio = data.get('audio')
     
+    if audio:
+        # Process audio to features
+        text = speech_to_text(audio)
+
     # 1. Preprocess
     clean_text = preprocess(text)
     
-    # 2. Vectorize (TF-IDF)
-    vector = tfidf.transform([clean_text])
+    # 2. Vectorize (TF-IDF) & OLS
+    vector = ols_transform(clean_text)
     
-    # 3. Filter Features (OLS indices)
-    ols_vector = vector[:, ols_indices]
-    
-    # 4. Predict
-    prediction = model.predict(ols_vector)
+    # 3. Predict
+    prediction = model.predict(vector)
     
     return jsonify({
         "class": prediction[0],
