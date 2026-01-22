@@ -128,7 +128,9 @@ const Demo: React.FC = () => {
   };
 
   const handlePermissionError = (err: any) => {
-      console.error("Error accessing microphone:", err);
+      // Log as warn instead of error to prevent alarming console output
+      console.warn("Microphone access issue:", err.message || err.name);
+      
       let msg = "Could not access microphone.";
       
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {

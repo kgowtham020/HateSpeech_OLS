@@ -82,17 +82,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
       } else if (err.name === 'NotFoundError') {
          console.warn("No microphone found.");
       } else {
-         console.error("Error checking microphone:", err);
+         console.warn("Error checking microphone:", err);
       }
       setMicStatus('error');
       setTimeout(() => setMicStatus('idle'), 4000);
     }
   }, []);
 
-  // Automatically request permission on component mount (page reload)
-  useEffect(() => {
-    handleMicRequest();
-  }, [handleMicRequest]);
+  // Removed the useEffect that auto-calls handleMicRequest to fix console errors on load.
 
   return (
     <>
