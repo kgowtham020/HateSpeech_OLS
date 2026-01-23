@@ -123,12 +123,12 @@ const Dataset: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
         <div>
            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Dataset Explorer</h2>
            <p className="mt-2 text-slate-600 dark:text-slate-400">Viewing the Davidson Hate Speech Dataset (Sample)</p>
         </div>
-        <div className="mt-4 md:mt-0 flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
            <button 
              onClick={downloadDataset}
              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors active:scale-95"
@@ -147,7 +147,7 @@ const Dataset: React.FC = () => {
         {/* Description */}
         <div>
           <h3 className="text-xl font-semibold mb-4 text-slate-800 dark:text-slate-100">Dataset Composition</h3>
-          <p className="text-slate-600 dark:text-slate-300 mb-6">
+          <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
             We utilize the widely cited Davidson et al. (2017) dataset collected from Twitter. 
             The dataset is heavily imbalanced, with a majority of tweets classified as "Offensive" rather than "Hate Speech".
             Our OLS algorithm specifically targets this imbalance by identifying features that distinguish between the two.
@@ -195,16 +195,16 @@ const Dataset: React.FC = () => {
       </div>
 
       {/* Table Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-4">
-        <div>
+      <div className="flex flex-col md:flex-row justify-between items-end mb-4 gap-4 md:gap-0">
+        <div className="w-full md:w-auto">
           <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Preprocessing Viewer</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400">Compare raw tweets vs. cleaned tokens.</p>
         </div>
-        <div className="relative mt-2 md:mt-0 w-full md:w-64">
+        <div className="relative w-full md:w-64">
            <input 
              type="text" 
              placeholder="Search dataset..." 
-             className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+             className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow"
            />
            <Search className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
         </div>
@@ -216,9 +216,9 @@ const Dataset: React.FC = () => {
             <thead className="bg-slate-50 dark:bg-slate-700">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-16">ID</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-1/3">Raw Input (Before)</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-1/3 min-w-[200px]">Raw Input (Before)</th>
                 <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-12"></th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-1/3">Preprocessed Output (After)</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider w-1/3 min-w-[200px]">Preprocessed Output (After)</th>
                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Label</th>
               </tr>
             </thead>
@@ -258,16 +258,16 @@ const Dataset: React.FC = () => {
         </div>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
-         <div className="text-sm text-slate-500 dark:text-slate-400">
+      {/* Pagination Controls - Responsive Stack */}
+      <div className="flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-6 gap-4">
+         <div className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">
             Showing <span className="font-medium">{(currentPage - 1) * rowsPerPage + 1}</span> to <span className="font-medium">{Math.min(currentPage * rowsPerPage, totalRecords)}</span> of <span className="font-medium">{totalRecords.toLocaleString()}</span> results
          </div>
          <div className="flex space-x-2">
             <button 
                onClick={() => handlePageChange(currentPage - 1)}
                disabled={currentPage === 1}
-               className="inline-flex items-center px-3 py-2 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+               className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-lg text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
                <ChevronLeft className="h-4 w-4 mr-1" />
                Previous
@@ -275,7 +275,7 @@ const Dataset: React.FC = () => {
             <button 
                onClick={() => handlePageChange(currentPage + 1)}
                disabled={currentPage >= totalPages}
-               className="inline-flex items-center px-3 py-2 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-md text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+               className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 shadow-sm text-sm font-medium rounded-lg text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
                Next
                <ChevronRight className="h-4 w-4 ml-1" />

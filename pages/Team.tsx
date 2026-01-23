@@ -72,7 +72,7 @@ const Team: React.FC = () => {
                </div>
                
                {/* Content */}
-               <div className="md:col-span-11 p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+               <div className="md:col-span-11 p-6 md:p-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
                   <div className="flex-shrink-0 relative">
                     <div className="h-32 w-32 md:h-40 md:w-40 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center border-[6px] border-white dark:border-slate-800 shadow-xl relative z-10">
                       <User className="h-16 w-16 md:h-20 md:w-20 text-slate-400 dark:text-slate-500" />

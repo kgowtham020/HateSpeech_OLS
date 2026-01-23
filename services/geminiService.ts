@@ -1,4 +1,5 @@
-import { PredictionResult, ClassLabel } from "../types";
+
+import { PredictionResult, ClassLabel, FileAnalysisResult } from "../types";
 
 export const analyzeText = async (
   text?: string, 
@@ -45,4 +46,38 @@ export const analyzeText = async (
     // Re-throw the exact error so Demo.tsx displays it
     throw error;
   }
+};
+
+export const analyzeAudioFile = async (file: File): Promise<FileAnalysisResult> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      try {
+        const base64Data = (reader.result as string).split(',')[1];
+        
+        const response = await fetch('/api/analyze-file', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            audio: {
+              data: base64Data,
+              mimeType: file.type || 'audio/mp3'
+            }
+          })
+        });
+
+        if (!response.ok) {
+           const errorText = await response.text();
+           throw new Error(`Analysis failed: ${errorText}`);
+        }
+
+        const data = await response.json();
+        resolve(data as FileAnalysisResult);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = (error) => reject(error);
+  });
 };

@@ -1,3 +1,4 @@
+
 export enum ClassLabel {
   HATE_SPEECH = 'Hate Speech',
   OFFENSIVE_LANGUAGE = 'Offensive Language',
@@ -9,6 +10,14 @@ export interface PredictionResult {
   confidence: number;
   explanation: string;
   transcription?: string; // Added to support audio-to-text feedback
+}
+
+export interface FileAnalysisResult {
+  transcription: string;
+  summary: string;
+  intent: string;
+  keyPoints: string[];
+  embedding: number[]; // Vector embeddings
 }
 
 export interface DatasetRow {

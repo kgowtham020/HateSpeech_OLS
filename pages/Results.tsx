@@ -59,30 +59,34 @@ const Results: React.FC = () => {
       {/* Confusion Matrix Visualization (Static for Educational Purpose) */}
       <div className="bg-white dark:bg-slate-800 p-8 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Confusion Matrix Heatmap (Concept)</h3>
-        <div className="grid grid-cols-4 gap-1 max-w-lg mx-auto text-sm">
-          {/* Headers */}
-          <div className="col-span-1"></div>
-          <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Hate</div>
-          <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Offensive</div>
-          <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Normal</div>
+        
+        {/* Scrollable Container for Mobile to prevent text crushing */}
+        <div className="overflow-x-auto pb-2">
+            <div className="grid grid-cols-4 gap-1 max-w-lg mx-auto text-sm min-w-[500px]">
+            {/* Headers */}
+            <div className="col-span-1"></div>
+            <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Hate</div>
+            <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Offensive</div>
+            <div className="col-span-1 text-center font-semibold text-slate-600 dark:text-slate-300">Pred: Normal</div>
 
-          {/* Row 1 */}
-          <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Hate</div>
-          <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold">1200</div>
-          <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center">150</div>
-          <div className="bg-blue-50 dark:bg-slate-700 text-blue-900 dark:text-blue-200 p-4 flex items-center justify-center">80</div>
+            {/* Row 1 */}
+            <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Hate</div>
+            <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold rounded-sm">1200</div>
+            <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center rounded-sm">150</div>
+            <div className="bg-blue-50 dark:bg-slate-700 text-blue-900 dark:text-blue-200 p-4 flex items-center justify-center rounded-sm">80</div>
 
-          {/* Row 2 */}
-          <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Offensive</div>
-          <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center">400</div>
-          <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold">18500</div>
-          <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center">290</div>
+            {/* Row 2 */}
+            <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Offensive</div>
+            <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center rounded-sm">400</div>
+            <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold rounded-sm">18500</div>
+            <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center rounded-sm">290</div>
 
-          {/* Row 3 */}
-          <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Normal</div>
-          <div className="bg-blue-50 dark:bg-slate-700 text-blue-900 dark:text-blue-200 p-4 flex items-center justify-center">50</div>
-          <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center">313</div>
-          <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold">3800</div>
+            {/* Row 3 */}
+            <div className="flex items-center justify-end pr-4 font-semibold text-slate-600 dark:text-slate-300">Actual: Normal</div>
+            <div className="bg-blue-50 dark:bg-slate-700 text-blue-900 dark:text-blue-200 p-4 flex items-center justify-center rounded-sm">50</div>
+            <div className="bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 p-4 flex items-center justify-center rounded-sm">313</div>
+            <div className="bg-blue-600 text-white p-4 flex items-center justify-center font-bold rounded-sm">3800</div>
+            </div>
         </div>
         <p className="text-center text-slate-500 mt-4 text-xs">
           *Values representative of the test set results. High diagonal values indicate correct classifications.

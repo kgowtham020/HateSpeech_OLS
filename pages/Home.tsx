@@ -9,32 +9,32 @@ const Home: React.FC<HomeProps> = ({ onStart }) => {
   return (
     <div className="flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full bg-gradient-to-b from-blue-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-24 px-4 text-center transition-colors duration-300">
+      <section className="w-full bg-gradient-to-b from-blue-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-20 sm:py-24 px-4 text-center transition-colors duration-300">
         <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center space-x-2 bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-full px-3 py-1 mb-8 shadow-sm">
+          <div className="inline-flex items-center space-x-2 bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-full px-3 py-1 mb-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="flex h-2 w-2 rounded-full bg-blue-600"></span>
             <span className="text-sm font-medium text-slate-600 dark:text-slate-300">University Capstone Project 2026</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
             Multimodal Hate Speech Detection <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
               Voice & Text Analysis
             </span>
           </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
+          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
             An advanced machine learning prototype that detects toxic content in both <strong>written text</strong> and <strong>spoken audio</strong> using OLS feature optimization.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-300">
             <button
               onClick={onStart}
-              className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200 transform hover:-translate-y-1"
+              className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl shadow-lg text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 transition-all duration-200 transform hover:-translate-y-1 focus:ring-4 focus:ring-blue-500/30 outline-none"
             >
               Try Voice Demo
               <Mic className="ml-2 h-5 w-5" />
             </button>
             <button
               onClick={() => document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth' })}
-              className="inline-flex items-center justify-center px-8 py-4 border border-slate-200 dark:border-slate-700 text-lg font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
+              className="inline-flex items-center justify-center px-8 py-4 border border-slate-200 dark:border-slate-700 text-lg font-medium rounded-xl text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 outline-none"
             >
               See Use Cases
             </button>

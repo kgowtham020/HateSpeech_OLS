@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
 export default {
@@ -16,61 +17,24 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // --- API Route: Handle Prediction Requests ---
+    // --- API Route: Handle Prediction Requests (Existing) ---
     if (url.pathname === '/api/predict' && request.method === 'POST') {
       try {
-        // 1. Securely access the API Key
         const apiKey = env.API_KEY;
-        if (!apiKey) {
-          console.error("API_KEY is missing in environment variables.");
-          return new Response(JSON.stringify({ 
-            error: 'Configuration Error: API_KEY is missing in Cloudflare settings.' 
-          }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
+        if (!apiKey) throw new Error("API_KEY missing");
 
-        // 2. Parse User Input
         let body;
-        try {
-          body = await request.json();
-        } catch (e) {
-          return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
-             status: 400,
-             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
-
+        try { body = await request.json(); } catch(e) { throw new Error("Invalid JSON"); }
         const { text, audio } = body;
 
-        if (!text && !audio) {
-          return new Response(JSON.stringify({ error: "Input text or audio is required." }), {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
-
-        // 3. Call Gemini API
         const ai = new GoogleGenAI({ apiKey });
         
         let contents = [];
-        
         if (audio) {
-            // Multimodal Request (Audio + Instructions)
-            // Ensure mimeType is valid. If frontend sent empty string, fallback to a safe default.
             const mimeType = audio.mimeType || "audio/webm";
-            
             contents = [
-                {
-                    inlineData: {
-                        mimeType: mimeType,
-                        data: audio.data
-                    }
-                },
-                {
-                    text: `You are an expert Hate Speech Detection system.
-                    
+                { inlineData: { mimeType: mimeType, data: audio.data } },
+                { text: `You are an expert Hate Speech Detection system.
                     TASK:
                     1. Listen to the audio provided.
                     2. Transcribe the speech exactly as spoken into the 'transcription' field.
@@ -84,36 +48,22 @@ export default {
                     - If the audio is silent or unintelligible, return "Normal Speech" and explain that no speech was detected.
                     - If the audio is short/cut off but contains a slur, classify based on available context.
                     
-                    Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.`
-                }
+                    Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.` }
             ];
         } else {
-            // Text Request
             contents = [
-                {
-                    text: `Act as a refined Machine Learning classifier trained on the Davidson Hate Speech Dataset.
-                    Your task is to classify the provided text into one of three categories:
-                    1. Hate Speech (Racist, sexist, or directed hate towards a protected group)
-                    2. Offensive Language (Vulgar, rude, or inappropriate, but not hate speech)
-                    3. Normal Speech (Neutral, positive, or benign)
-                    
-                    If the text is nonsense, too short, or meaningless (like "kc", "asdf"), classify it as "Normal Speech" with low confidence.
-
-                    Analyze the text accurately. Provide a confidence score (0.0 to 1.0) and a brief academic explanation.
-                    
-                    Text to analyze: "${text}"`
-                }
+                { text: `Act as a refined Machine Learning classifier trained on the Davidson Hate Speech Dataset.
+                    Classify the text into: Hate Speech, Offensive Language, or Normal Speech.
+                    Text: "${text}"` }
             ];
         }
         
         const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview", // Supports multimodal
+          model: "gemini-3-flash-preview",
           contents: contents,
           config: {
             thinkingConfig: { thinkingBudget: 0 },
             responseMimeType: "application/json",
-            // We use BLOCK_NONE to ensure the model actually processes the offensive content for classification
-            // rather than refusing to answer.
             safetySettings: [
               { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
               { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -123,49 +73,91 @@ export default {
             responseSchema: {
               type: Type.OBJECT,
               properties: {
-                label: {
-                  type: Type.STRING,
-                  enum: [
-                    'Hate Speech',
-                    'Offensive Language',
-                    'Normal Speech'
-                  ],
-                },
-                confidence: {
-                  type: Type.NUMBER,
-                  description: "Confidence score between 0 and 1",
-                },
-                explanation: {
-                  type: Type.STRING,
-                  description: "A brief sentence explaining the classification logic.",
-                },
-                transcription: {
-                  type: Type.STRING,
-                  description: "The text extracted from the audio (if audio provided), or the input text.",
-                }
+                label: { type: Type.STRING, enum: ['Hate Speech', 'Offensive Language', 'Normal Speech'] },
+                confidence: { type: Type.NUMBER },
+                explanation: { type: Type.STRING },
+                transcription: { type: Type.STRING }
               },
               required: ["label", "confidence", "explanation"],
             },
           },
         });
 
-        const resultJSON = response.text;
-        
-        if (!resultJSON) {
-           throw new Error("Model returned empty response.");
-        }
-        
-        return new Response(resultJSON, {
+        return new Response(response.text, {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
 
       } catch (error) {
-        console.error("Worker Execution Error:", error);
-        return new Response(JSON.stringify({ 
-          error: `Worker Error: ${error.message || error.toString()}` 
-        }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // --- API Route: Handle File Analysis (New) ---
+    if (url.pathname === '/api/analyze-file' && request.method === 'POST') {
+      try {
+        const apiKey = env.API_KEY;
+        if (!apiKey) throw new Error("API_KEY missing");
+
+        const body = await request.json();
+        const { audio } = body;
+        if (!audio) throw new Error("Audio data required");
+
+        const ai = new GoogleGenAI({ apiKey });
+
+        // Step 1: Transcribe and Analyze
+        const analysisResponse = await ai.models.generateContent({
+          model: "gemini-3-flash-preview",
+          contents: [
+            { inlineData: { mimeType: audio.mimeType, data: audio.data } },
+            { text: `Analyze this audio file. 
+                     1. Transcribe it accurately.
+                     2. Summarize the content in one sentence.
+                     3. Determine the intent of the speaker.
+                     4. Extract 3 key points.` }
+          ],
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                transcription: { type: Type.STRING },
+                summary: { type: Type.STRING },
+                intent: { type: Type.STRING },
+                keyPoints: { type: Type.ARRAY, items: { type: Type.STRING } }
+              },
+              required: ["transcription", "summary", "intent", "keyPoints"]
+            }
+          }
+        });
+
+        const analysisData = JSON.parse(analysisResponse.text);
+
+        // Step 2: Generate Embeddings (if transcription exists)
+        let embeddingValues = [];
+        if (analysisData.transcription && analysisData.transcription.trim().length > 0) {
+           const embedResponse = await ai.models.embedContent({
+             model: "text-embedding-004",
+             content: analysisData.transcription
+           });
+           embeddingValues = embedResponse.embedding.values;
+        }
+
+        // Combine Data
+        const finalResult = {
+          ...analysisData,
+          embedding: embeddingValues.slice(0, 50) // Return subset for demo visualization to save bandwidth/ui space
+        };
+
+        return new Response(JSON.stringify(finalResult), {
+           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (error) {
+        console.error(error);
+        return new Response(JSON.stringify({ error: error.message }), {
+           status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
     }
@@ -176,13 +168,10 @@ export default {
         const response = await env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
         if (response.status === 200) return response;
       }
-
       let response = await env.ASSETS.fetch(request);
-
       if (response.status === 404 && !url.pathname.includes('.')) {
         response = await env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
       }
-
       return response;
     } catch (e) {
       return new Response("Not Found", { status: 404 });

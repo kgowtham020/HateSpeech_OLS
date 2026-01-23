@@ -1,7 +1,8 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, AlertTriangle, CheckCircle, Info, Loader2, Mic, Square, Trash2, Volume2, Lock, MessageSquare, RotateCcw } from 'lucide-react';
-import { analyzeText } from '../services/geminiService';
-import { PredictionResult, ClassLabel } from '../types';
+import { Send, AlertTriangle, CheckCircle, Info, Loader2, Mic, Square, Trash2, Volume2, Lock, MessageSquare, RotateCcw, UploadCloud, FileAudio, Activity, Cpu } from 'lucide-react';
+import { analyzeText, analyzeAudioFile } from '../services/geminiService';
+import { PredictionResult, ClassLabel, FileAnalysisResult } from '../types';
 
 // Add SpeechRecognition types
 declare global {
@@ -27,6 +28,11 @@ const Demo: React.FC = () => {
   // Permission Retry State
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [permissionErrorDetails, setPermissionErrorDetails] = useState<string>('');
+
+  // File Upload State
+  const [fileAnalysis, setFileAnalysis] = useState<FileAnalysisResult | null>(null);
+  const [fileLoading, setFileLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recognitionRef = useRef<any>(null); // For Speech Recognition
@@ -380,6 +386,30 @@ const Demo: React.FC = () => {
     }
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.includes('audio') && !file.name.endsWith('.mp3')) {
+        alert("Please upload an MP3 or audio file.");
+        return;
+    }
+
+    setFileLoading(true);
+    setFileAnalysis(null);
+    try {
+        const result = await analyzeAudioFile(file);
+        setFileAnalysis(result);
+    } catch (e: any) {
+        console.error(e);
+        alert("File analysis failed: " + e.message);
+    } finally {
+        setFileLoading(false);
+        // Reset input
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const getResultColor = (label: ClassLabel) => {
     switch (label) {
       case ClassLabel.HATE_SPEECH: return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-900 dark:text-red-200';
@@ -617,6 +647,117 @@ const Demo: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* NEW SECTION: Fast Audio Analysis Demo */}
+      <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+         <div className="flex items-center justify-center space-x-2 mb-6">
+            <Activity className="h-5 w-5 text-indigo-500" />
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Experimental: Fast File Analysis</h3>
+            <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-100 text-indigo-700 font-bold uppercase tracking-wide">Beta</span>
+         </div>
+         
+         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 shadow-lg">
+            {!fileAnalysis && !fileLoading && (
+                <div className="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-10 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                     onClick={() => fileInputRef.current?.click()}>
+                    <input 
+                       type="file" 
+                       accept=".mp3,audio/*" 
+                       className="hidden" 
+                       ref={fileInputRef}
+                       onChange={handleFileUpload}
+                    />
+                    <div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-full mb-4">
+                        <UploadCloud className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <p className="font-medium text-slate-700 dark:text-slate-200">Click to upload MP3 Audio</p>
+                    <p className="text-xs text-slate-400 mt-2">Transcribes + Vectorizes + Analyzes in &lt;1s</p>
+                </div>
+            )}
+
+            {fileLoading && (
+                <div className="flex flex-col items-center justify-center py-10">
+                    <Loader2 className="h-10 w-10 text-indigo-600 animate-spin mb-4" />
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Processing Audio Pipeline...</p>
+                    <div className="flex items-center space-x-2 mt-3 text-xs text-slate-400">
+                        <span>Transcribing</span>
+                        <span>→</span>
+                        <span>Vectorizing</span>
+                        <span>→</span>
+                        <span>Analyzing</span>
+                    </div>
+                </div>
+            )}
+
+            {fileAnalysis && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex justify-between items-start mb-6">
+                       <div>
+                          <h4 className="font-bold text-lg text-slate-900 dark:text-white">Analysis Complete</h4>
+                          <p className="text-xs text-green-500 font-medium">Processed successfully</p>
+                       </div>
+                       <button 
+                         onClick={() => { setFileAnalysis(null); }}
+                         className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                       >
+                         Analyze Another
+                       </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-100 dark:border-slate-700">
+                            <div className="flex items-center space-x-2 mb-3">
+                                <FileAudio className="h-4 w-4 text-slate-500" />
+                                <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Transcription</span>
+                            </div>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 italic">"{fileAnalysis.transcription}"</p>
+                        </div>
+                        
+                        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-100 dark:border-slate-700">
+                             <div className="flex items-center space-x-2 mb-3">
+                                <Cpu className="h-4 w-4 text-slate-500" />
+                                <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Vector Embedding (Snippet)</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                                {fileAnalysis.embedding.map((val, idx) => (
+                                    <div 
+                                      key={idx} 
+                                      className="h-6 w-1 rounded-full"
+                                      style={{ 
+                                          backgroundColor: `rgba(99, 102, 241, ${Math.abs(val) * 10})`, // Visualize intensity
+                                          height: `${Math.min(100, Math.max(20, Math.abs(val) * 300))}%`
+                                      }}
+                                      title={val.toFixed(4)}
+                                    ></div>
+                                ))}
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-2 text-right font-mono">float32[768] (showing first 50)</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 bg-indigo-50 dark:bg-indigo-950/30 p-5 rounded-lg border border-indigo-100 dark:border-indigo-900">
+                        <h5 className="font-bold text-indigo-900 dark:text-indigo-200 mb-2">Insights Generated</h5>
+                        <div className="space-y-2">
+                             <div>
+                                <span className="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase mr-2">Summary:</span>
+                                <span className="text-sm text-indigo-900 dark:text-indigo-100">{fileAnalysis.summary}</span>
+                             </div>
+                             <div>
+                                <span className="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase mr-2">Intent:</span>
+                                <span className="text-sm text-indigo-900 dark:text-indigo-100">{fileAnalysis.intent}</span>
+                             </div>
+                             <div className="mt-2 pt-2 border-t border-indigo-200 dark:border-indigo-800/50">
+                                <span className="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase block mb-1">Key Points:</span>
+                                <ul className="list-disc list-inside text-sm text-indigo-900 dark:text-indigo-100">
+                                    {fileAnalysis.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
+                                </ul>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+         </div>
       </div>
     </div>
   );
