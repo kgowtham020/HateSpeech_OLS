@@ -183,6 +183,7 @@ const Dataset: React.FC = () => {
                 dataKey="value"
                 label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
               >
+                {/* Use underscore for unused 'entry' parameter to satisfy TS6133 */}
                 {distributionData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
