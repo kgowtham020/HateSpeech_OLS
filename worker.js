@@ -48,6 +48,7 @@ export default {
                     IMPORTANT:
                     - If the audio is silent or unintelligible, return "Normal Speech" and explain that no speech was detected.
                     - If the audio is short/cut off but contains a slur, classify based on available context.
+                    - Do not repeat the same text repeatedly. Avoid looping content.
                     
                     Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.` }
               ]
@@ -120,7 +121,11 @@ export default {
                        1. Transcribe it accurately.
                        2. Summarize the content in one sentence.
                        3. Determine the intent of the speaker.
-                       4. Extract 3 key points.` }
+                       4. Extract 3 key points.
+                       
+                       IMPORTANT:
+                       - If the audio is silent or unintelligible, state that no speech was detected.
+                       - Do not repeat the same text repeatedly. Avoid looping content.` }
             ]
           },
           config: {

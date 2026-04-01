@@ -3,7 +3,7 @@ import { GoogleGenAI, Type, HarmCategory, HarmBlockThreshold } from "@google/gen
 import { PredictionResult, ClassLabel, FileAnalysisResult } from "../types";
 
 const getAI = () => {
-  const apiKey = process.env.API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("API_KEY is missing. Please check your environment variables.");
   }
@@ -36,6 +36,7 @@ export const analyzeText = async (
                 IMPORTANT:
                 - If the audio is silent or unintelligible, return "Normal Speech" and explain that no speech was detected.
                 - If the audio is short/cut off but contains a slur, classify based on available context.
+                - Do not repeat the same text repeatedly. Avoid looping content.
                 
                 Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.` }
           ]
@@ -112,7 +113,11 @@ export const analyzeAudioFile = async (file: File): Promise<FileAnalysisResult> 
                        1. Transcribe it accurately.
                        2. Summarize the content in one sentence.
                        3. Determine the intent of the speaker.
-                       4. Extract 3 key points.` }
+                       4. Extract 3 key points.
+                       
+                       IMPORTANT:
+                       - If the audio is silent or unintelligible, state that no speech was detected.
+                       - Do not repeat the same text repeatedly. Avoid looping content.` }
             ]
           },
           config: {

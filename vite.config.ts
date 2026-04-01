@@ -9,8 +9,8 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
     },
     define: {
-      // This ensures process.env.API_KEY works in the browser code
-      'process.env.API_KEY': JSON.stringify(env.API_KEY || '')
+      // This ensures process.env.GEMINI_API_KEY works in the browser code
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || env.API_KEY || '')
     }
   };
 });
