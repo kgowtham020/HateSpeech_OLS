@@ -33,6 +33,7 @@ const Demo: React.FC = () => {
   const [fileAnalysis, setFileAnalysis] = useState<FileAnalysisResult | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mainFileInputRef = useRef<HTMLInputElement>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recognitionRef = useRef<any>(null); // For Speech Recognition
@@ -386,12 +387,42 @@ const Demo: React.FC = () => {
     }
   };
 
+  const handleMainFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.includes('audio') && !file.name.endsWith('.mp3')) {
+        alert("Please upload an MP3 or audio file.");
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        alert("File is too large. Please upload an audio file smaller than 5MB.");
+        return;
+    }
+
+    setAudioBlob(file);
+    setMimeType(file.type || 'audio/mpeg');
+    setAudioUrl(URL.createObjectURL(file));
+    setRecordingDuration(0);
+    setInputText('');
+    setResult(null);
+    setError(null);
+    
+    if (mainFileInputRef.current) mainFileInputRef.current.value = '';
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     if (!file.type.includes('audio') && !file.name.endsWith('.mp3')) {
         alert("Please upload an MP3 or audio file.");
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        alert("File is too large. Please upload an audio file smaller than 5MB.");
         return;
     }
 
@@ -444,7 +475,7 @@ const Demo: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Voice Input (Live)
+                Voice or Audio File Input
                 </label>
                 {isRecording && <span className="flex items-center text-xs text-red-500 animate-pulse font-bold"><div className="h-2 w-2 bg-red-500 rounded-full mr-1"></div> RECORDING</span>}
             </div>
@@ -487,16 +518,40 @@ const Demo: React.FC = () => {
               )}
 
               {!audioBlob && !isRecording && !showPermissionModal && (
-                <button 
-                  onClick={startRecording}
-                  className={`flex flex-col items-center group w-full py-4 z-10`}
-                >
-                  <div className="h-20 w-20 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm">
-                    <Mic className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center z-10">
+                  <button 
+                    onClick={startRecording}
+                    className="flex flex-col items-center group py-4 px-6 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="h-16 w-16 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                      <Mic className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <span className="text-base font-bold text-slate-700 dark:text-white">Record Voice</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Speak into microphone</span>
+                  </button>
+
+                  <div className="hidden sm:flex items-center justify-center">
+                    <span className="text-slate-300 dark:text-slate-600 font-medium">OR</span>
                   </div>
-                  <span className="text-lg font-bold text-slate-700 dark:text-white">Tap to Speak</span>
-                  <span className="text-sm text-slate-500 dark:text-slate-400 mt-1">Converts voice to text immediately</span>
-                </button>
+
+                  <button 
+                    onClick={() => mainFileInputRef.current?.click()}
+                    className="flex flex-col items-center group py-4 px-6 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                      <UploadCloud className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <span className="text-base font-bold text-slate-700 dark:text-white">Upload MP3</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Max size: 5MB</span>
+                  </button>
+                  <input 
+                    type="file" 
+                    accept=".mp3,audio/*" 
+                    className="hidden" 
+                    ref={mainFileInputRef}
+                    onChange={handleMainFileUpload}
+                  />
+                </div>
               )}
 
               {isRecording && !showPermissionModal && (
@@ -525,7 +580,7 @@ const Demo: React.FC = () => {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-slate-900 dark:text-white">Audio Recorded</p>
-                            <p className="text-xs text-slate-500">{formatTime(recordingDuration)} • {mimeType.split(';')[0]}</p>
+                            <p className="text-xs text-slate-500">{recordingDuration > 0 ? `${formatTime(recordingDuration)} • ` : 'Uploaded File • '}{mimeType.split(';')[0]}</p>
                           </div>
                       </div>
                       <div className="flex items-center gap-2">

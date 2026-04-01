@@ -29,10 +29,11 @@ export default {
 
         const ai = new GoogleGenAI({ apiKey });
         
-        let contents = [];
+        let contents;
         if (audio) {
             const mimeType = audio.mimeType || "audio/webm";
-            contents = [
+            contents = {
+              parts: [
                 { inlineData: { mimeType: mimeType, data: audio.data } },
                 { text: `You are an expert Hate Speech Detection system.
                     TASK:
@@ -49,13 +50,16 @@ export default {
                     - If the audio is short/cut off but contains a slur, classify based on available context.
                     
                     Return JSON with 'label', 'confidence' (0.0-1.0), 'explanation', and 'transcription'.` }
-            ];
+              ]
+            };
         } else {
-            contents = [
+            contents = {
+              parts: [
                 { text: `Act as a refined Machine Learning classifier trained on the Davidson Hate Speech Dataset.
                     Classify the text into: Hate Speech, Offensive Language, or Normal Speech.
                     Text: "${text}"` }
-            ];
+              ]
+            };
         }
         
         const response = await ai.models.generateContent({
@@ -88,7 +92,7 @@ export default {
         });
 
       } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ error: error.message || String(error) }), {
           status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
@@ -109,14 +113,16 @@ export default {
         // Step 1: Transcribe and Analyze
         const analysisResponse = await ai.models.generateContent({
           model: "gemini-3-flash-preview",
-          contents: [
-            { inlineData: { mimeType: audio.mimeType, data: audio.data } },
-            { text: `Analyze this audio file. 
-                     1. Transcribe it accurately.
-                     2. Summarize the content in one sentence.
-                     3. Determine the intent of the speaker.
-                     4. Extract 3 key points.` }
-          ],
+          contents: {
+            parts: [
+              { inlineData: { mimeType: audio.mimeType, data: audio.data } },
+              { text: `Analyze this audio file. 
+                       1. Transcribe it accurately.
+                       2. Summarize the content in one sentence.
+                       3. Determine the intent of the speaker.
+                       4. Extract 3 key points.` }
+            ]
+          },
           config: {
             responseMimeType: "application/json",
             responseSchema: {
@@ -138,10 +144,10 @@ export default {
         let embeddingValues = [];
         if (analysisData.transcription && analysisData.transcription.trim().length > 0) {
            const embedResponse = await ai.models.embedContent({
-             model: "text-embedding-004",
-             content: analysisData.transcription
+             model: "gemini-embedding-2-preview",
+             contents: [analysisData.transcription]
            });
-           embeddingValues = embedResponse.embedding.values;
+           embeddingValues = embedResponse.embeddings[0].values;
         }
 
         // Combine Data
@@ -156,7 +162,7 @@ export default {
 
       } catch (error) {
         console.error(error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ error: error.message || String(error) }), {
            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
