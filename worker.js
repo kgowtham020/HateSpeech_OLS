@@ -64,7 +64,7 @@ export default {
         }
         
         const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
+          model: "gemini-3.1-flash-lite-preview",
           contents: contents,
           config: {
             responseMimeType: "application/json",
@@ -120,7 +120,7 @@ export default {
 
         // Step 1: Transcribe and Analyze
         const analysisResponse = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
+          model: "gemini-3.1-flash-lite-preview",
           contents: {
             parts: [
               { inlineData: { mimeType: audio.mimeType, data: audio.data } },
@@ -166,19 +166,13 @@ export default {
         }
 
         // Step 2: Generate Embeddings (if transcription exists)
+        // Removed to speed up the analysis response
         let embeddingValues = [];
-        if (analysisData.transcription && analysisData.transcription.trim().length > 0) {
-           const embedResponse = await ai.models.embedContent({
-             model: "gemini-embedding-2-preview",
-             contents: [analysisData.transcription]
-           });
-           embeddingValues = embedResponse.embeddings[0].values;
-        }
 
         // Combine Data
         const finalResult = {
           ...analysisData,
-          embedding: embeddingValues.slice(0, 50) // Return subset for demo visualization to save bandwidth/ui space
+          embedding: embeddingValues // Return empty array to keep UI compatible
         };
 
         return new Response(JSON.stringify(finalResult), {
