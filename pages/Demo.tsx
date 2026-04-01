@@ -548,7 +548,7 @@ const Demo: React.FC = () => {
                   </button>
                   <input 
                     type="file" 
-                    accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" 
+                    accept="audio/*,audio/mp3,audio/mpeg,audio/wav,audio/x-m4a,audio/ogg,.mp3,.wav,.m4a,.aac,.ogg" 
                     className="hidden" 
                     ref={mainFileInputRef}
                     onChange={handleMainFileUpload}
@@ -720,7 +720,7 @@ const Demo: React.FC = () => {
                      onClick={() => fileInputRef.current?.click()}>
                     <input 
                        type="file" 
-                       accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" 
+                       accept="audio/*,audio/mp3,audio/mpeg,audio/wav,audio/x-m4a,audio/ogg,.mp3,.wav,.m4a,.aac,.ogg" 
                        className="hidden" 
                        ref={fileInputRef}
                        onChange={handleFileUpload}

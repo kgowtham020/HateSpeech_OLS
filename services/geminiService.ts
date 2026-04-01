@@ -15,6 +15,44 @@ export const analyzeText = async (
   audio?: { data: string, mimeType: string }
 ): Promise<PredictionResult> => {
   try {
+    // Try calling the backend proxy first (works in production via Cloudflare Worker)
+    try {
+      const response = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, audio })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (!result.label) {
+          return {
+            label: ClassLabel.NORMAL,
+            confidence: 0.0,
+            explanation: "Could not classify input. The model returned a valid response but missing label.",
+          };
+        }
+        return result as PredictionResult;
+      } else {
+        // If it's a 404 on localhost, we let it fall through to the fallback.
+        // Otherwise, we throw the error.
+        if (response.status === 404 && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+           // Let it fall through to fallback
+        } else {
+           const errData = await response.json().catch(() => ({}));
+           throw new Error(errData.error || `Backend returned ${response.status}`);
+        }
+      }
+    } catch (fetchError: any) {
+      // If fetch fails completely (e.g. network error) or it's not a 404, we might want to throw.
+      // But if it's a 404 or Failed to fetch, we catch and fallback.
+      if (fetchError.message && !fetchError.message.includes('404') && !fetchError.message.includes('Failed to fetch')) {
+        throw fetchError;
+      }
+      // Let it fall through to fallback
+    }
+
+    // Fallback: Direct API call for local development (Vite)
     const ai = getAI();
     let contents;
     
@@ -55,7 +93,6 @@ export const analyzeText = async (
       model: "gemini-3-flash-preview",
       contents: contents,
       config: {
-        thinkingConfig: { thinkingBudget: 0 },
         responseMimeType: "application/json",
         safetySettings: [
           { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -114,6 +151,35 @@ export const analyzeAudioFile = async (file: File): Promise<FileAnalysisResult> 
     reader.onload = async () => {
       try {
         const base64Data = (reader.result as string).split(',')[1];
+        const mimeType = file.type || 'audio/mpeg';
+
+        // Try calling the backend proxy first (works in production via Cloudflare Worker)
+        try {
+          const response = await fetch('/api/analyze-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ audio: { data: base64Data, mimeType } })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            return resolve(result as FileAnalysisResult);
+          } else {
+            if (response.status === 404 || response.status === 502) {
+               // Let it fall through to fallback
+            } else {
+               const errData = await response.json().catch(() => ({}));
+               throw new Error(errData.error || `Backend returned ${response.status}`);
+            }
+          }
+        } catch (fetchError: any) {
+          if (fetchError.message && !fetchError.message.includes('404') && !fetchError.message.includes('Failed to fetch')) {
+            throw fetchError;
+          }
+          // Let it fall through to fallback
+        }
+
+        // Fallback: Direct API call for local development (Vite)
         const ai = getAI();
 
         // Step 1: Transcribe and Analyze
@@ -121,7 +187,7 @@ export const analyzeAudioFile = async (file: File): Promise<FileAnalysisResult> 
           model: "gemini-3-flash-preview",
           contents: {
             parts: [
-              { inlineData: { mimeType: file.type || 'audio/mpeg', data: base64Data } },
+              { inlineData: { mimeType, data: base64Data } },
               { text: `Analyze this audio file. 
                        1. Transcribe it accurately.
                        2. Summarize the content in one sentence.

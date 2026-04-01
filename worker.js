@@ -1,5 +1,5 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, HarmCategory, HarmBlockThreshold } from "@google/genai";
 
 export default {
   async fetch(request, env) {
@@ -67,13 +67,12 @@ export default {
           model: "gemini-3-flash-preview",
           contents: contents,
           config: {
-            thinkingConfig: { thinkingBudget: 0 },
             responseMimeType: "application/json",
             safetySettings: [
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+              { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+              { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE }
             ],
             responseSchema: {
               type: Type.OBJECT,
@@ -88,7 +87,15 @@ export default {
           },
         });
 
-        return new Response(response.text, {
+        let cleanText = (response.text || "{}").trim();
+        if (cleanText.startsWith('```json')) {
+            cleanText = cleanText.substring(7);
+        }
+        if (cleanText.endsWith('```')) {
+            cleanText = cleanText.substring(0, cleanText.length - 3);
+        }
+        
+        return new Response(cleanText.trim(), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
 
@@ -143,7 +150,20 @@ export default {
           }
         });
 
-        const analysisData = JSON.parse(analysisResponse.text);
+        let analysisData;
+        try {
+          let cleanText = (analysisResponse.text || "{}").trim();
+          if (cleanText.startsWith('```json')) {
+              cleanText = cleanText.substring(7);
+          }
+          if (cleanText.endsWith('```')) {
+              cleanText = cleanText.substring(0, cleanText.length - 3);
+          }
+          analysisData = JSON.parse(cleanText.trim());
+        } catch (e) {
+          console.error("JSON Parse Error:", analysisResponse.text);
+          throw new Error("Failed to parse model response as JSON");
+        }
 
         // Step 2: Generate Embeddings (if transcription exists)
         let embeddingValues = [];
