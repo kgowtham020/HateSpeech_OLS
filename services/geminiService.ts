@@ -76,7 +76,20 @@ export const analyzeText = async (
       },
     });
 
-    const result = JSON.parse(response.text || "{}");
+    let result;
+    try {
+      let cleanText = (response.text || "{}").trim();
+      if (cleanText.startsWith('```json')) {
+          cleanText = cleanText.substring(7);
+      }
+      if (cleanText.endsWith('```')) {
+          cleanText = cleanText.substring(0, cleanText.length - 3);
+      }
+      result = JSON.parse(cleanText.trim());
+    } catch (e) {
+      console.error("JSON Parse Error:", response.text);
+      result = {};
+    }
     
     if (!result.label) {
       return {
@@ -135,7 +148,20 @@ export const analyzeAudioFile = async (file: File): Promise<FileAnalysisResult> 
           }
         });
 
-        const analysisData = JSON.parse(analysisResponse.text || "{}");
+        let analysisData;
+        try {
+          let cleanText = (analysisResponse.text || "{}").trim();
+          if (cleanText.startsWith('```json')) {
+              cleanText = cleanText.substring(7);
+          }
+          if (cleanText.endsWith('```')) {
+              cleanText = cleanText.substring(0, cleanText.length - 3);
+          }
+          analysisData = JSON.parse(cleanText.trim());
+        } catch (e) {
+          console.error("JSON Parse Error:", analysisResponse.text);
+          analysisData = {};
+        }
 
         // Step 2: Generate Embeddings (if transcription exists)
         let embeddingValues: number[] = [];

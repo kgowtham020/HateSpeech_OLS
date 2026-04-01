@@ -391,13 +391,14 @@ const Demo: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.includes('audio') && !file.name.endsWith('.mp3')) {
-        alert("Please upload an MP3 or audio file.");
+    const isValidAudio = file.type.startsWith('audio/') || file.name.toLowerCase().match(/\.(mp3|wav|m4a|aac|ogg|flac|wma)$/);
+    if (!isValidAudio) {
+        alert("Please upload a valid audio file (MP3, WAV, M4A, etc.).");
         return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-        alert("File is too large. Please upload an audio file smaller than 5MB.");
+    if (file.size > 10 * 1024 * 1024) {
+        alert("File is too large. Please upload an audio file smaller than 10MB.");
         return;
     }
 
@@ -416,13 +417,14 @@ const Demo: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.includes('audio') && !file.name.endsWith('.mp3')) {
-        alert("Please upload an MP3 or audio file.");
+    const isValidAudio = file.type.startsWith('audio/') || file.name.toLowerCase().match(/\.(mp3|wav|m4a|aac|ogg|flac|wma)$/);
+    if (!isValidAudio) {
+        alert("Please upload a valid audio file (MP3, WAV, M4A, etc.).");
         return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-        alert("File is too large. Please upload an audio file smaller than 5MB.");
+    if (file.size > 10 * 1024 * 1024) {
+        alert("File is too large. Please upload an audio file smaller than 10MB.");
         return;
     }
 
@@ -541,12 +543,12 @@ const Demo: React.FC = () => {
                     <div className="h-16 w-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm">
                       <UploadCloud className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <span className="text-base font-bold text-slate-700 dark:text-white">Upload MP3</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Max size: 5MB</span>
+                    <span className="text-base font-bold text-slate-700 dark:text-white">Upload Audio</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1">Max size: 10MB</span>
                   </button>
                   <input 
                     type="file" 
-                    accept=".mp3,audio/*" 
+                    accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" 
                     className="hidden" 
                     ref={mainFileInputRef}
                     onChange={handleMainFileUpload}
@@ -646,7 +648,7 @@ const Demo: React.FC = () => {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
-                  Processing...
+                  Processing... (may take 10-30s)
                 </>
               ) : (
                 <>
@@ -718,7 +720,7 @@ const Demo: React.FC = () => {
                      onClick={() => fileInputRef.current?.click()}>
                     <input 
                        type="file" 
-                       accept=".mp3,audio/*" 
+                       accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg" 
                        className="hidden" 
                        ref={fileInputRef}
                        onChange={handleFileUpload}
@@ -726,8 +728,8 @@ const Demo: React.FC = () => {
                     <div className="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-full mb-4">
                         <UploadCloud className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
                     </div>
-                    <p className="font-medium text-slate-700 dark:text-slate-200">Click to upload MP3 Audio</p>
-                    <p className="text-xs text-slate-400 mt-2">Transcribes + Vectorizes + Analyzes in &lt;1s</p>
+                    <p className="font-medium text-slate-700 dark:text-slate-200">Click to upload Audio File</p>
+                    <p className="text-xs text-slate-400 mt-2">Transcribes + Vectorizes + Analyzes</p>
                 </div>
             )}
 
@@ -735,6 +737,7 @@ const Demo: React.FC = () => {
                 <div className="flex flex-col items-center justify-center py-10">
                     <Loader2 className="h-10 w-10 text-indigo-600 animate-spin mb-4" />
                     <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Processing Audio Pipeline...</p>
+                    <p className="text-xs text-slate-500 mt-1">This may take 10-30 seconds depending on file size.</p>
                     <div className="flex items-center space-x-2 mt-3 text-xs text-slate-400">
                         <span>Transcribing</span>
                         <span>→</span>
